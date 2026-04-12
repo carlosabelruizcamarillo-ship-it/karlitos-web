@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Karlitos Hot Dogs</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header>
+    <p>Ordena fácil por WhatsApp 🔥</p>
+    <h1>Karlitos Hot Dogs</h1>
+    <div id="visitCounterDebug" class="visit-counter-debug">
+      <span>Visitas:</span>
+      <strong id="visitCounter">Cargando...</strong>
+    </div>
+    <nav>
+      <a href="#menu">Menú</a>
+      <a href="#promociones">Promociones</a>
+      <a href="#ubicacion">Ubicación</a>
+      <a href="#whatsapp">Pedidos por WhatsApp</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <p>Street food</p>
+      <h2 class="hero-brand"><span>Karlitos Hot Dogs</span><img src="./img/logo-hero-karlitos.png" alt="Logo de Karlitos Hot Dogs" /></h2>
+      <p>
+        Sabor callejero bien hecho en Los Cabos: hot dogs, hamburguesas,
+        boneless, burros y antojos servidos al momento con ese toque
+        rendidor que hace volver.
+      </p>
+      <p class="operation-note">
+        Consumo en local: ordena y paga en caja. Este menú digital es para consultar productos y precios.
+        WhatsApp es para pedidos para llevar o anticipados. Si ya estás en el local y quieres algo extra, pídelo en caja.
+      </p>
+      <p>Preparado al momento</p>
+      <p>Pedidos directos</p>
+      <p>Martes a domingo</p>
+      <a href="#menu">Menú digital</a>
+    </section>
+
+    <section>
+      <p>Más pedido</p>
+      <h2>Hot Dog súper especial</h2>
+      <p>Carne, queso, tocino y papitas dentro en un solo antojo.</p>
+      <strong>$85</strong>
+    </section>
+
+    <section id="promociones">
+      <p>Promociones</p>
+      <h2>Promos de la semana</h2>
+      <p>Promociones reales por día para que siempre haya una buena excusa para caerle.</p>
+
+      <article class="promo-item" data-product-name="Promo Martes · 3 Hot Dogs + papas" data-product-price="150">
+        <span>🔥 Promo del día</span>
+        <strong>Martes · Hot Dogs</strong>
+        <h3>3 Hot Dogs + papas</h3>
+        <p>Una promo directa, llenadora y perfecta para arrancar la semana con antojo.</p>
+        <b>$150</b>
+        <button class="add-to-cart" type="button">Agregar al pedido</button>
+      </article>
+
+      <article class="promo-item" data-product-name="Promo Jueves · 3 Tortitas" data-product-price="180">
+        <span>⚡ Oferta especial</span>
+        <strong>Jueves · Promo Tortita</strong>
+        <h3>3 Tortitas</h3>
+        <p>Elige tus tortitas de asada o adobada y arma una cena rendidora para compartir.</p>
+        <b>$180</b>
+        <button class="add-to-cart" type="button">Agregar al pedido</button>
+      </article>
+
+      <article class="promo-item" data-product-name="Promo Miércoles y Viernes · 3 Hamburguesas" data-product-price="160">
+        <span>⭐ Más vendido</span>
+        <strong>Miércoles y Viernes · Hamburguesas</strong>
+        <h3>3 Hamburguesas</h3>
+        <p>Promo fuerte para media semana y fin de semana, ideal para pedir en combo.</p>
+        <b>$160</b>
+        <p>+ papas y agua — $90</p>
+        <button class="add-to-cart" type="button">Agregar al pedido</button>
+      </article>
+
+      <article class="promo-item" data-product-name="Domingo · Combo Familiar" data-product-price="460">
+        <img src="./img/combo-familiar.jpg" alt="Combo Familiar Karlitos" />
+        <span>🔥 Promo del día</span>
+        <strong>Domingo · Combo Familiar</strong>
+        <h3>3 hamburguesas + boneless + papas + 2 refrescos</h3>
+        <p>La opción más completa de la semana para pedir en familia y resolver toda la cena.</p>
+        <b>$460</b>
+        <button class="add-to-cart" type="button">Agregar al pedido</button>
+      </article>
+    </section>
+
+    <section id="menu">
+      <p>Menú</p>
+      <h2>MENU</h2>
+
+      <div class="menu-grid">
+        <article class="menu-category menu-category--red">
+          <h3>Hot Dogs</h3>
+          <p class="menu-note-text">¿Algún cambio especial? Escríbelo al enviar tu pedido por WhatsApp. Ejemplo: sin mostaza, sin cebolla, con poca crema.</p>
+          <div class="product-list">
+            <button class="product-card" type="button" data-product-name="Hot Dog clásico" data-product-price="35"><span>Hot Dog clásico</span><strong>$35</strong></button>
+            <button class="product-card" type="button" data-product-name="Hot Dog con carne" data-product-price="55"><span>Hot Dog con carne</span><strong>$55</strong></button>
+            <button class="product-card" type="button" data-product-name="Hot Dog con papas" data-product-price="60"><span>Hot Dog con papas</span><strong>$60</strong></button>
+            <button class="product-card" type="button" data-product-name="Hot Dog carne y queso" data-product-price="65"><span>Hot Dog carne y queso</span><strong>$65</strong></button>
+            <button class="product-card product-card--detailed" type="button" data-product-name="Hot Dog súper especial" data-product-price="85">
+              <span>Hot Dog súper especial</span>
+              <small>Carne, queso, tocino y papitas dentro</small>
+              <strong>$85</strong>
+            </button>
+          </div>
+        </article>
+
+        <article class="menu-category menu-category--red">
+          <h3>Burgers</h3>
+          <p class="menu-note-text">¿Algún cambio especial? Escríbelo al enviar tu pedido por WhatsApp. Ejemplo: sin mostaza, sin cebolla, con poca crema.</p>
+          <div class="product-list">
+            <button class="product-card" type="button" data-product-name="Hamburguesa sencilla" data-product-price="95"><span>Hamburguesa sencilla</span><strong>$95</strong></button>
+            <button class="product-card" type="button" data-product-name="Hamburguesa con papas" data-product-price="125"><span>Hamburguesa con papas</span><strong>$125</strong></button>
+            <button class="product-card product-card--detailed" type="button" data-product-name="Hamburguesa especial" data-product-price="145">
+              <span>Hamburguesa especial</span>
+              <small>Doble carne, queso gratinado, tocino, aguacate y papitas dentro</small>
+              <strong>$145</strong>
+            </button>
+          </div>
+        </article>
+
+        <article class="menu-category menu-category--yellow">
+          <h3>Boneless y Alitas</h3>
+          <p class="menu-note-text">Sencillos, con papas o con combo.</p>
+          <div class="product-list">
+            <button class="product-card" type="button" data-boneless-presentation="sencillos" data-product-price="180"><span>Sencillos</span><strong>$180</strong></button>
+            <button class="product-card" type="button" data-boneless-presentation="con-papas" data-product-price="210"><span>Con papas</span><strong>$210</strong></button>
+            <button class="product-card" type="button" data-boneless-presentation="con-combo" data-product-price="260"><span>Con combo</span><strong>$260</strong></button>
+          </div>
+        </article>
+
+        <article class="menu-category menu-category--accent">
+          <h3>Super Burros</h3>
+          <p class="menu-note-text">Asada, deshebrada o adobada.</p>
+          <p class="menu-note-text">¿Algún cambio especial? Escríbelo al enviar tu pedido por WhatsApp. Ejemplo: sin mostaza, sin cebolla, con poca crema.</p>
+          <div class="product-list">
+            <button class="product-card" type="button" data-product-name="Super burro" data-product-price="115"><span>Super burro</span><strong>$115</strong></button>
+            <button class="product-card" type="button" data-product-name="Quesaburro" data-product-price="145"><span>Quesaburro</span><strong>$145</strong></button>
+            <button class="product-card" type="button" data-product-name="Super burro con papas" data-product-price="145"><span>Super burro con papas</span><strong>$145</strong></button>
+            <button class="product-card" type="button" data-product-name="Quesaburro con papas" data-product-price="170"><span>Quesaburro con papas</span><strong>$170</strong></button>
+          </div>
+        </article>
+
+        <article class="menu-category menu-category--red">
+          <h3>Tortitas</h3>
+          <p class="menu-note-text">Pan de hotdog a la plancha con mantequilla.</p>
+          <div class="product-list">
+            <button class="product-card" type="button" data-product-name="Tortita sencilla" data-product-price="95"><span>Sencilla</span><strong>$95</strong></button>
+            <button class="product-card" type="button" data-product-name="Tortita con papas" data-product-price="125"><span>Con papas</span><strong>$125</strong></button>
+            <button class="product-card product-card--detailed" type="button" data-product-name="Tortita especial" data-product-price="145"><span>Especial</span><small>Queso gratinado, aguacate, tocino y papitas dentro</small><strong>$145</strong></button>
+          </div>
+        </article>
+
+        <article class="menu-category menu-category--yellow">
+          <h3>Papas a la francesa</h3>
+          <div class="product-list">
+            <button class="product-card" type="button" data-product-name="Papas a la francesa" data-product-price="70" data-fries-item="true"><span>Papas</span><strong>$70</strong></button>
+            <button class="product-card" type="button" data-product-name="Salchipapas" data-product-price="100" data-fries-item="true"><span>Salchipapas</span><strong>$100</strong></button>
+            <button class="product-card" type="button" data-product-name="Carnipapas" data-product-price="110" data-fries-item="true"><span>Carnipapas</span><strong>$110</strong></button>
+            <button class="product-card product-card--detailed" type="button" data-product-name="Papas especiales" data-product-price="170" data-fries-item="true">
+              <span>Papas especiales</span>
+              <small>Carne, salchichas y queso gratinado</small>
+              <strong>$170</strong>
+            </button>
+            <button class="product-card" type="button" data-product-name="Tocino frito" data-product-price="30"><span>Tocino frito</span><strong>$30</strong></button>
+          </div>
+          <button type="button" class="menu-recommendation menu-recommendation--action" id="open-fries-sauce">Atrévete a probar tus papas con nuestras salsas +$20 por porción</button>
+        </article>
+
+        <article class="menu-category menu-category--yellow">
+          <h3>Drinks</h3>
+          <div class="product-list">
+            <button class="product-card" type="button" data-product-name="Agua de fruta natural litro" data-product-price="60"><span>Agua de fruta natural litro</span><strong>$60</strong></button>
+            <button class="product-card" type="button" data-product-name="Refresco" data-product-price="35"><span>Refresco</span><strong>$35</strong></button>
+            <button class="product-card" type="button" data-product-name="Agua natural" data-product-price="30"><span>Agua natural</span><strong>$30</strong></button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="whatsapp">
+      <p>Tu pedido</p>
+      <h2>Revisa antes de mandar a pago</h2>
+      <p>Agrega productos, ajusta cantidades y revisa el total antes de elegir cómo vas a pagar.</p>
+
+      <div class="order-summary">
+        <p class="summary-helper">Productos agregados</p>
+        <div id="cart-empty" class="cart-empty">Todavía no agregas productos a tu pedido.</div>
+        <div id="cart-items" class="cart-items" hidden></div>
+        <div class="cart-footer">
+          <div>
+            <span>Total</span>
+            <strong id="cart-total">$0</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="pago"
+      data-qr-image="./qr-transferencia-web-karlitos.png"
+      data-bank-name="Bancoppel"
+      data-account-holder="ARISVE CAMARILLO GERALDO"
+      data-card-number="4169 1608 8736 0957"
+      data-whatsapp-number="526242112620"
+    >
+      <p>Método de pago</p>
+      <h2>Confirma tu pedido de forma simple</h2>
+      <p>Elige cómo quieres pagar. Si prefieres transferencia o QR, aquí mismo puedes ver el total y mandar tu comprobante.</p>
+
+      <div class="payment-layout">
+        <div class="payment-form">
+          <label class="field">
+            <span>Total del pedido</span>
+            <input id="payment-total" type="number" min="0" step="1" placeholder="Ej. 250" />
+          </label>
+
+          <label class="field">
+            <span>Nombre del cliente</span>
+            <input id="customer-name" type="text" placeholder="Ej. Carlos" />
+          </label>
+
+          <div class="payment-methods" role="radiogroup" aria-label="Método de pago">
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="pickup" checked />
+              <span>Pagar al recoger</span>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="transfer" />
+              <span>Transferencia / QR</span>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="cash" />
+              <span>Efectivo al recoger</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="payment-qr-panel" class="payment-qr-panel" hidden>
+          <p class="payment-panel-title">Transferencia / QR</p>
+          <p class="payment-panel-copy">Puedes pagar escaneando el QR o copiando los datos bancarios manualmente.</p>
+
+          <div class="payment-summary payment-summary--extended">
+            <div>
+              <span>Total</span>
+              <strong id="payment-total-display">$0</strong>
+            </div>
+            <div>
+              <span>Beneficiario</span>
+              <strong id="account-holder-display">ARISVE CAMARILLO GERALDO</strong>
+            </div>
+            <div>
+              <span>Banco</span>
+              <strong id="bank-name-display">Bancoppel</strong>
+            </div>
+            <div id="payment-card-block">
+              <span>Tarjeta</span>
+              <strong id="card-number-display">4169 1608 8736 0957</strong>
+            </div>
+          </div>
+
+          <div class="payment-qr-box">
+            <img id="payment-qr-image" src="./qr-transferencia-web-karlitos.png" alt="QR de pago por transferencia" />
+            <p id="payment-qr-fallback" class="payment-qr-fallback" hidden>No se pudo cargar el QR de pago. Escríbenos por WhatsApp para enviártelo directo.</p>
+            <p class="payment-qr-tip">(Mantén presionado el QR para abrirlo)</p>
+          </div>
+
+          <div class="payment-copy-actions">
+            <button id="copy-card-button" type="button">Copiar tarjeta</button>
+          </div>
+          <p id="payment-copy-feedback" class="payment-copy-feedback" aria-live="polite"></p>
+
+          <p class="payment-confirmation-note">Tu pedido se confirma en cuanto verifiquemos el pago.</p>
+
+          <a id="payment-proof-link" href="https://wa.me/526242112620" target="_blank" rel="noreferrer">Enviar comprobante por WhatsApp</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="pedido-final">
+      <p>Enviar pedido</p>
+      <h2>Finaliza tu pedido por WhatsApp</h2>
+      <p>Cuando ya revisaste tu pedido y forma de pago, envíanos el resumen completo para confirmarlo.</p>
+      <p class="whatsapp-hotdog-note">¿Algún cambio especial? Escríbelo al enviar tu pedido por WhatsApp. Ejemplo: sin mostaza, sin cebolla, con poca crema.</p>
+      <a id="send-order-whatsapp" href="https://wa.me/526242112620" target="_blank" rel="noreferrer">Enviar pedido por WhatsApp</a>
+    </section>
+
+    <section id="ubicacion">
+      <p>Ubicación</p>
+      <h2>Operación local en Los Cabos con atención nocturna y pedidos directos.</h2>
+      <p>En una esquina, enfrente de una purificadora de agua, Avenida Laurel entre Cascalozuchil, 23436 San José del Cabo, B.C.S.</p>
+      <p>Descansamos los lunes</p>
+      <p>Martes a jueves: 5:30 PM a 12:30 AM</p>
+      <p>Viernes a domingo: 5:30 PM a 1:00 AM</p>
+      <a
+        href="https://www.google.com/maps/search/?api=1&query=Karlitos+Hotdogs%2C+Avenida+Laurel+entre+Cascalozuchil%2C+23436+San+Jos%C3%A9+del+Cabo%2C+B.C.S."
+        target="_blank"
+        rel="noreferrer"
+      >Ver en el mapa</a>
+    </section>
+
+    <div id="boneless-modal" class="selection-modal" hidden>
+      <div class="selection-modal__backdrop" data-close-boneless-modal></div>
+      <div class="selection-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="boneless-modal-title">
+        <button class="selection-modal__close" type="button" aria-label="Cerrar" data-close-boneless-modal>&times;</button>
+        <p class="selection-modal__eyebrow">Boneless y Alitas</p>
+        <h3 id="boneless-modal-title">Elige si lo quieres en boneless o alitas</h3>
+        <p class="selection-modal__copy" id="boneless-modal-copy">Selecciona el tipo y tus salsas para agregarlo al pedido.</p>
+
+        <div class="selection-modal__choices">
+          <button type="button" class="selection-choice" data-protein-choice="Boneless">Boneless</button>
+          <button type="button" class="selection-choice" data-protein-choice="Alitas">Alitas</button>
+        </div>
+
+        <div class="selection-modal__step" data-boneless-sauce-step hidden>
+        <div class="option-box option-box--compact sauce-selector" data-sauce-target="boneless-modal">
+          <p class="option-box__title">Elige 1 o hasta 2 salsas incluidas</p>
+          <div class="sauce-options">
+            <label><input type="checkbox" value="Tamarindo" /> <span>Tamarindo</span></label>
+            <label><input type="checkbox" value="Buffalo" /> <span>Buffalo</span></label>
+            <label><input type="checkbox" value="BBQ" /> <span>BBQ</span></label>
+            <label><input type="checkbox" value="BBQ picante" /> <span>BBQ picante</span></label>
+            <label><input type="checkbox" value="Mango habanero" /> <span>Mango habanero</span></label>
+            <label><input type="checkbox" value="Piña Hot" /> <span>Piña Hot</span></label>
+          </div>
+          <p class="option-box__hint sauce-selector__hint">Puedes elegir hasta 2 salsas sin costo extra.</p>
+        </div>
+
+        <div class="option-box option-box--compact sauce-extra">
+          <label class="sauce-extra__toggle">
+            <input type="checkbox" id="modal-extra-sauce-toggle" />
+            <span>Agregar salsa extra +$20 por porción</span>
+          </label>
+          <div class="sauce-extra__controls" data-extra-sauce-controls-modal hidden>
+            <select id="modal-extra-sauce-select" aria-label="Salsa extra">
+              <option value="">Elige salsa extra</option>
+              <option value="Tamarindo">Tamarindo</option>
+              <option value="Buffalo">Buffalo</option>
+              <option value="BBQ">BBQ</option>
+              <option value="BBQ picante">BBQ picante</option>
+              <option value="Mango habanero">Mango habanero</option>
+              <option value="Piña Hot">Piña Hot</option>
+            </select>
+          </div>
+        </div>
+        </div>
+
+        <button id="confirm-boneless-selection" class="selection-modal__confirm" type="button">Agregar al pedido</button>
+      </div>
+    </div>
+
+    <div id="fries-modal" class="selection-modal" hidden>
+      <div class="selection-modal__backdrop" data-close-fries-modal></div>
+      <div class="selection-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="fries-modal-title">
+        <button class="selection-modal__close" type="button" aria-label="Cerrar" data-close-fries-modal>&times;</button>
+        <p class="selection-modal__eyebrow">Papas a la francesa</p>
+        <h3 id="fries-modal-title">Agrega salsa a tus papas si quieres</h3>
+        <p id="fries-modal-copy" class="selection-modal__copy">La salsa para papas cuesta +$20 por porción.</p>
+
+        <label class="field field--compact" id="fries-item-field" hidden>
+          <span>Selecciona tus papas</span>
+          <select id="fries-item-select" aria-label="Producto de papas"></select>
+        </label>
+
+        <div class="option-box option-box--compact sauce-extra">
+          <label class="sauce-extra__toggle">
+            <input type="checkbox" id="fries-sauce-toggle" />
+            <span>Atrévete a probar tus papas con nuestras salsas +$20 por porción</span>
+          </label>
+          <div class="sauce-extra__controls" data-fries-sauce-controls hidden>
+            <select id="fries-sauce-select" aria-label="Salsa para papas">
+              <option value="">Elige salsa para papas</option>
+              <option value="Tamarindo">Tamarindo</option>
+              <option value="Buffalo">Buffalo</option>
+              <option value="BBQ">BBQ</option>
+              <option value="BBQ picante">BBQ picante</option>
+              <option value="Mango habanero">Mango habanero</option>
+              <option value="Piña Hot">Piña Hot</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="confirm-fries-selection" class="selection-modal__confirm" type="button">Agregar al pedido</button>
+      </div>
+    </div>
+  </main>
+
+  <a
+    href="https://www.google.com/maps/search/?api=1&query=Karlitos+Hotdogs%2C+Avenida+Laurel+entre+Cascalozuchil%2C+23436+San+Jos%C3%A9+del+Cabo%2C+B.C.S."
+    aria-label="Ubicación"
+    title="Cómo llegar"
+    target="_blank"
+    rel="noreferrer"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        fill="#fff"
+        d="M12 22s7-5.77 7-12a7 7 0 1 0-14 0c0 6.23 7 12 7 12Zm0-9.5A2.5 2.5 0 1 0 12 7a2.5 2.5 0 0 0 0 5.5Z"
+      />
+    </svg>
+    <span>Llegar</span>
+  </a>
+
+  <script src="./script.js"></script>
+</body>
+</html>
