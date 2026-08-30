@@ -46,9 +46,11 @@ const bonelessModalTitle = document.getElementById("boneless-modal-title");
 const bonelessModalCopy = document.getElementById("boneless-modal-copy");
 const bonelessSauceSelector = bonelessModal?.querySelector('.sauce-selector[data-sauce-target="boneless-modal"]');
 const bonelessSauceStep = bonelessModal?.querySelector("[data-boneless-sauce-step]");
+const bonelessSauceCounter = bonelessModal?.querySelector("[data-sauce-counter]");
 const bonelessExtraSauceToggle = document.getElementById("modal-extra-sauce-toggle");
 const bonelessExtraSauceSelect = document.getElementById("modal-extra-sauce-select");
 const bonelessExtraSauceControls = document.querySelector("[data-extra-sauce-controls-modal]");
+const bonelessExtraSauceOptions = bonelessModal?.querySelector("[data-extra-sauce-options-modal]");
 const bonelessConfirmButton = document.getElementById("confirm-boneless-selection");
 
 const friesModal = document.getElementById("fries-modal");
@@ -84,6 +86,7 @@ const bonelessModalState = {
   presentationKey: "",
   price: 0,
   protein: "",
+  canConfirm: false,
 };
 
 const friesModalState = {
@@ -109,27 +112,169 @@ const getCheckedValues = (container) => {
 
 const getSelectedSauces = (container) => getCheckedValues(container);
 
+const getSauceLabel = (count) => (count === 1 ? "salsa" : "salsas");
+
+const pulseSelection = (element) => {
+  if (!element) {
+    return;
+  }
+
+  element.classList.remove("is-popping");
+  void element.offsetWidth;
+  element.classList.add("is-popping");
+};
+
+const setSauceHint = (selector, message, isError = false) => {
+  const hint = selector?.querySelector(".sauce-selector__hint");
+  if (!hint) {
+    return;
+  }
+
+  hint.textContent = message;
+  hint.classList.toggle("is-error", isError);
+};
+
+const updateSauceSelectorUI = (selector, options = {}) => {
+  if (!selector) {
+    return;
+  }
+
+  const selectedSauces = getSelectedSauces(selector);
+  const hasReachedLimit = selectedSauces.length >= 2;
+
+  selector.querySelectorAll(".sauce-options label").forEach((label) => {
+    const input = label.querySelector('input[type="checkbox"]');
+    if (!input) {
+      return;
+    }
+
+    const shouldDisable = hasReachedLimit && !input.checked;
+    input.disabled = shouldDisable;
+    label.classList.toggle("is-selected", input.checked);
+    label.classList.toggle("is-disabled", shouldDisable);
+  });
+
+  if (selector === bonelessSauceSelector && bonelessSauceCounter) {
+    bonelessSauceCounter.textContent = `Seleccionadas: ${selectedSauces.length} / 2`;
+  }
+
+  const defaultMessage = hasReachedLimit
+    ? "Listo: 2 salsas incluidas."
+    : "Puedes elegir hasta 2 salsas sin costo extra.";
+
+  setSauceHint(selector, options.message || defaultMessage, Boolean(options.isError));
+};
+
+const updateExtraSauceUI = () => {
+  if (!bonelessExtraSauceToggle || !bonelessExtraSauceControls) {
+    return;
+  }
+
+  const enabled = bonelessExtraSauceToggle.checked;
+  const selectedValue = enabled ? bonelessExtraSauceSelect?.value || "" : "";
+  const toggleChip = bonelessExtraSauceToggle.closest(".sauce-extra__toggle");
+
+  bonelessExtraSauceControls.hidden = !enabled;
+  toggleChip?.classList.toggle("is-active", enabled);
+
+  if (!enabled && bonelessExtraSauceSelect) {
+    bonelessExtraSauceSelect.value = "";
+  }
+
+  bonelessExtraSauceOptions?.querySelectorAll("[data-extra-sauce-choice]").forEach((button) => {
+    const isSelected = button.dataset.extraSauceChoice === selectedValue;
+    button.classList.toggle("is-selected", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
+};
+
+const updateBonelessConfirmState = () => {
+  if (!bonelessConfirmButton) {
+    return;
+  }
+
+  const selectedSauces = getSelectedSauces(bonelessSauceSelector);
+  const hasProtein = Boolean(bonelessModalState.protein);
+  const hasIncludedSauce = selectedSauces.length > 0;
+  const extraEnabled = Boolean(bonelessExtraSauceToggle?.checked);
+  const hasExtraSauce = Boolean(bonelessExtraSauceSelect?.value);
+  const needsExtraSauce = extraEnabled && !hasExtraSauce;
+  const canConfirm = hasProtein && hasIncludedSauce && !needsExtraSauce;
+  const total = bonelessModalState.price + (extraEnabled && hasExtraSauce ? EXTRA_SAUCE_PRICE : 0);
+  const shouldRevealConfirm =
+    canConfirm &&
+    !bonelessModalState.canConfirm &&
+    !bonelessModal?.hidden &&
+    (selectedSauces.length >= 2 || (extraEnabled && hasExtraSauce));
+
+  bonelessConfirmButton.disabled = !canConfirm;
+  bonelessConfirmButton.classList.toggle("is-ready", canConfirm);
+
+  if (canConfirm && !bonelessModalState.canConfirm) {
+    pulseSelection(bonelessConfirmButton);
+  }
+
+  bonelessModalState.canConfirm = canConfirm;
+
+  if (shouldRevealConfirm) {
+    requestAnimationFrame(() => {
+      bonelessConfirmButton.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    });
+  }
+
+  if (canConfirm) {
+    bonelessConfirmButton.textContent =
+      `Agregar ${bonelessModalState.protein} \u2022 ${selectedSauces.length} ${getSauceLabel(selectedSauces.length)} \u2022 ${formatCurrency(total)}`;
+    return;
+  }
+
+  if (!hasProtein) {
+    bonelessConfirmButton.textContent = "Elige Boneless o Alitas";
+    return;
+  }
+
+  if (!hasIncludedSauce) {
+    bonelessConfirmButton.textContent = "Elige al menos 1 salsa";
+    return;
+  }
+
+  if (needsExtraSauce) {
+    bonelessConfirmButton.textContent = "Elige la salsa extra";
+    return;
+  }
+
+  bonelessConfirmButton.textContent = "Agregar al pedido";
+};
+
 const bindSauceSelectorLimit = (selector) => {
   if (!selector) {
     return;
   }
 
-  const hint = selector.querySelector(".sauce-selector__hint");
+  updateSauceSelectorUI(selector);
+
   selector.addEventListener("change", (event) => {
+    if (!event.target.matches('input[type="checkbox"]')) {
+      return;
+    }
+
     const checked = getSelectedSauces(selector);
+    const chip = event.target.closest("label");
+
     if (checked.length <= 2) {
-      if (hint) {
-        hint.textContent = "Puedes elegir hasta 2 salsas sin costo extra.";
-        hint.classList.remove("is-error");
-      }
+      updateSauceSelectorUI(selector);
+      pulseSelection(chip);
+      updateBonelessConfirmState();
       return;
     }
 
     event.target.checked = false;
-    if (hint) {
-      hint.textContent = "Solo puedes elegir hasta 2 salsas.";
-      hint.classList.add("is-error");
-    }
+    updateSauceSelectorUI(selector, {
+      message: "Solo puedes elegir hasta 2 salsas.",
+      isError: true,
+    });
+    pulseSelection(chip);
+    updateBonelessConfirmState();
   });
 };
 
@@ -137,13 +282,28 @@ bindSauceSelectorLimit(bonelessSauceSelector);
 
 if (bonelessExtraSauceToggle && bonelessExtraSauceControls) {
   bonelessExtraSauceToggle.addEventListener("change", () => {
-    const enabled = bonelessExtraSauceToggle.checked;
-    bonelessExtraSauceControls.hidden = !enabled;
-    if (!enabled && bonelessExtraSauceSelect) {
-      bonelessExtraSauceSelect.value = "";
-    }
+    updateExtraSauceUI();
+    updateBonelessConfirmState();
+    pulseSelection(bonelessExtraSauceToggle.closest(".sauce-extra__toggle"));
   });
 }
+
+bonelessExtraSauceOptions?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-extra-sauce-choice]");
+  if (!button || !bonelessExtraSauceSelect) {
+    return;
+  }
+
+  bonelessExtraSauceSelect.value = button.dataset.extraSauceChoice;
+  updateExtraSauceUI();
+  updateBonelessConfirmState();
+  pulseSelection(button);
+});
+
+bonelessExtraSauceSelect?.addEventListener("change", () => {
+  updateExtraSauceUI();
+  updateBonelessConfirmState();
+});
 
 if (friesSauceToggle && friesSauceControls) {
   friesSauceToggle.addEventListener("change", () => {
@@ -164,12 +324,40 @@ const getDisplayNameForProtein = (protein, presentationKey) => {
   return protein === "Alitas" ? config.alitasName : config.bonelessName;
 };
 
+const syncModalToVisualViewport = (modal) => {
+  if (!modal || !window.visualViewport) {
+    return;
+  }
+
+  const viewport = window.visualViewport;
+  modal.style.top = `${viewport.offsetTop}px`;
+  modal.style.left = `${viewport.offsetLeft}px`;
+  modal.style.right = "auto";
+  modal.style.bottom = "auto";
+  modal.style.width = `${viewport.width}px`;
+  modal.style.height = `${viewport.height}px`;
+};
+
+const resetModalViewport = (modal) => {
+  if (!modal) {
+    return;
+  }
+
+  modal.style.top = "";
+  modal.style.left = "";
+  modal.style.right = "";
+  modal.style.bottom = "";
+  modal.style.width = "";
+  modal.style.height = "";
+};
+
 const closeBonelessModal = () => {
   if (!bonelessModal) {
     return;
   }
 
   bonelessModal.hidden = true;
+  resetModalViewport(bonelessModal);
   document.body.style.overflow = "";
 };
 
@@ -182,6 +370,18 @@ const closeFriesModal = () => {
   document.body.style.overflow = "";
 };
 
+window.visualViewport?.addEventListener("resize", () => {
+  if (bonelessModal && !bonelessModal.hidden) {
+    syncModalToVisualViewport(bonelessModal);
+  }
+});
+
+window.visualViewport?.addEventListener("scroll", () => {
+  if (bonelessModal && !bonelessModal.hidden) {
+    syncModalToVisualViewport(bonelessModal);
+  }
+});
+
 const openBonelessModal = (trigger) => {
   const presentationKey = trigger.dataset.bonelessPresentation;
   const config = presentationConfig[presentationKey];
@@ -192,6 +392,7 @@ const openBonelessModal = (trigger) => {
   bonelessModalState.presentationKey = presentationKey;
   bonelessModalState.price = Number(trigger.dataset.productPrice);
   bonelessModalState.protein = "";
+  bonelessModalState.canConfirm = false;
 
   bonelessModalTitle.textContent = `${config.label}: elige si lo quieres en boneless o alitas`;
   bonelessModalCopy.textContent =
@@ -199,6 +400,7 @@ const openBonelessModal = (trigger) => {
 
   bonelessModal.querySelectorAll("[data-protein-choice]").forEach((button) => {
     button.classList.remove("is-active");
+    button.setAttribute("aria-pressed", "false");
   });
 
   if (bonelessSauceStep) {
@@ -207,13 +409,10 @@ const openBonelessModal = (trigger) => {
 
   bonelessSauceSelector?.querySelectorAll('input[type="checkbox"]').forEach((input) => {
     input.checked = false;
+    input.disabled = false;
   });
 
-  const hint = bonelessSauceSelector?.querySelector(".sauce-selector__hint");
-  if (hint) {
-    hint.textContent = "Puedes elegir hasta 2 salsas sin costo extra.";
-    hint.classList.remove("is-error");
-  }
+  updateSauceSelectorUI(bonelessSauceSelector);
 
   if (bonelessExtraSauceToggle) {
     bonelessExtraSauceToggle.checked = false;
@@ -224,11 +423,12 @@ const openBonelessModal = (trigger) => {
   if (bonelessExtraSauceSelect) {
     bonelessExtraSauceSelect.value = "";
   }
-  if (bonelessConfirmButton) {
-    bonelessConfirmButton.disabled = true;
-  }
+
+  updateExtraSauceUI();
+  updateBonelessConfirmState();
 
   bonelessModal.hidden = false;
+  syncModalToVisualViewport(bonelessModal);
   document.body.style.overflow = "hidden";
 };
 
@@ -324,14 +524,16 @@ bonelessModal?.querySelectorAll("[data-protein-choice]").forEach((button) => {
   button.addEventListener("click", () => {
     bonelessModalState.protein = button.dataset.proteinChoice;
     bonelessModal?.querySelectorAll("[data-protein-choice]").forEach((choice) => {
-      choice.classList.toggle("is-active", choice === button);
+      const isActive = choice === button;
+      choice.classList.toggle("is-active", isActive);
+      choice.setAttribute("aria-pressed", String(isActive));
     });
     if (bonelessSauceStep) {
       bonelessSauceStep.hidden = false;
     }
-    if (bonelessConfirmButton) {
-      bonelessConfirmButton.disabled = false;
-    }
+    bonelessModalCopy.textContent = "Elige 1 o 2 salsas incluidas. Si quieres, agrega una salsa extra.";
+    updateBonelessConfirmState();
+    pulseSelection(button);
   });
 });
 
@@ -359,12 +561,12 @@ const getBonelessProductConfig = () => {
   }
 
   const selectedSauces = getSelectedSauces(bonelessSauceSelector);
-  const hint = bonelessSauceSelector?.querySelector(".sauce-selector__hint");
   if (!selectedSauces.length) {
-    if (hint) {
-      hint.textContent = "Elige al menos 1 salsa para continuar.";
-      hint.classList.add("is-error");
-    }
+    updateSauceSelectorUI(bonelessSauceSelector, {
+      message: "Elige al menos 1 salsa para continuar.",
+      isError: true,
+    });
+    updateBonelessConfirmState();
     return null;
   }
 
@@ -378,10 +580,11 @@ const getBonelessProductConfig = () => {
   let unitPrice = bonelessModalState.price;
 
   if (bonelessExtraSauceToggle?.checked && !bonelessExtraSauceSelect?.value) {
-    if (hint) {
-      hint.textContent = "Elige la salsa extra o desactiva la opción adicional.";
-      hint.classList.add("is-error");
-    }
+    updateSauceSelectorUI(bonelessSauceSelector, {
+      message: "Elige la salsa extra o desactiva la opción adicional.",
+      isError: true,
+    });
+    updateBonelessConfirmState();
     return null;
   }
 
@@ -476,7 +679,7 @@ const removeOneBySourceKey = (sourceKey) => {
 };
 
 const ensureProductQuantityControls = () => {
-  document.querySelectorAll("#menu .product-card").forEach((card) => {
+  document.querySelectorAll("#menu .product-card, #promociones .promo-item, .featured-special[data-product-name]").forEach((card) => {
     if (card.querySelector(".product-quantity")) {
       return;
     }
@@ -505,6 +708,35 @@ const updateProductQuantityControls = () => {
 
     valueNode.textContent = String(getCountForSourceKey(sourceKey));
   });
+
+  document.querySelectorAll("#promociones .promo-item[data-product-name]").forEach((promo) => {
+    const valueNode = promo.querySelector(".product-quantity span");
+    if (!valueNode) {
+      return;
+    }
+
+    valueNode.textContent = String(getCountForSourceKey(promo.dataset.productName));
+  });
+
+  document.querySelectorAll("#promociones .promo-addon[data-addon-name]").forEach((addon) => {
+    const valueNode = addon.querySelector(".promo-addon__quantity span");
+    if (!valueNode) {
+      return;
+    }
+
+    const count = getCountForSourceKey(addon.dataset.addonName);
+    valueNode.textContent = String(count);
+    addon.classList.toggle("is-selected", count > 0);
+  });
+
+  document.querySelectorAll(".featured-special[data-product-name]").forEach((featured) => {
+    const valueNode = featured.querySelector(".product-quantity span");
+    if (!valueNode) {
+      return;
+    }
+
+    valueNode.textContent = String(getCountForSourceKey(featured.dataset.productName));
+  });
 };
 
 const updateOrderWhatsappLink = () => {
@@ -522,7 +754,6 @@ const updateOrderWhatsappLink = () => {
   const paymentLabels = {
     pickup: "Pagar al recoger",
     transfer: "Transferencia / QR",
-    cash: "Efectivo al recoger",
   };
 
   const lines = Array.from(cart.values()).flatMap((item) => [
@@ -625,6 +856,10 @@ document.querySelectorAll("[data-boneless-presentation]").forEach((card) => {
 
 document.querySelectorAll("#promociones [data-product-name][data-product-price]").forEach((element) => {
   element.addEventListener("click", (event) => {
+    if (event.target.closest("[data-qty-action]")) {
+      return;
+    }
+
     const actionButton = event.target.closest(".add-to-cart");
     if (!actionButton) {
       return;
@@ -637,6 +872,84 @@ document.querySelectorAll("#promociones [data-product-name][data-product-price]"
       unitPrice: Number(element.dataset.productPrice),
       details: [],
       sourceKey: element.dataset.productName,
+    });
+  });
+});
+
+document.querySelector("#promociones")?.addEventListener("click", (event) => {
+  const addonButton = event.target.closest("[data-addon-action]");
+  if (addonButton) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const addon = addonButton.closest(".promo-addon");
+    if (!addon) {
+      return;
+    }
+
+    if (addonButton.dataset.addonAction === "decrease") {
+      removeOneBySourceKey(addon.dataset.addonName);
+      return;
+    }
+
+    addToCart({
+      key: buildCartKey(addon.dataset.addonName, []),
+      name: addon.dataset.addonName,
+      unitPrice: Number(addon.dataset.addonPrice),
+      details: [],
+      sourceKey: addon.dataset.addonName,
+    });
+    return;
+  }
+
+  const button = event.target.closest("[data-qty-action]");
+  if (!button) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  const promo = button.closest(".promo-item");
+  if (!promo) {
+    return;
+  }
+
+  if (button.dataset.qtyAction === "decrease") {
+    removeOneBySourceKey(promo.dataset.productName);
+    return;
+  }
+
+  addToCart({
+    key: buildCartKey(promo.dataset.productName, []),
+    name: promo.dataset.productName,
+    unitPrice: Number(promo.dataset.productPrice),
+    details: [],
+    sourceKey: promo.dataset.productName,
+  });
+});
+
+document.querySelectorAll(".featured-special[data-product-name][data-product-price]").forEach((featured) => {
+  featured.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-qty-action]");
+    if (!button) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (button.dataset.qtyAction === "decrease") {
+      removeOneBySourceKey(featured.dataset.productName);
+      return;
+    }
+
+    addToCart({
+      key: buildCartKey(featured.dataset.productName, []),
+      name: featured.dataset.productName,
+      unitPrice: Number(featured.dataset.productPrice),
+      details: [],
+      sourceKey: featured.dataset.productName,
     });
   });
 });
@@ -742,59 +1055,10 @@ const paymentSection = document.getElementById("pago");
 if (paymentSection) {
   const paymentQrPanel = document.getElementById("payment-qr-panel");
   const totalDisplay = document.getElementById("payment-total-display");
-  const accountHolderDisplay = document.getElementById("account-holder-display");
-  const bankNameDisplay = document.getElementById("bank-name-display");
-  const cardNumberDisplay = document.getElementById("card-number-display");
   const proofLink = document.getElementById("payment-proof-link");
-  const qrImage = document.getElementById("payment-qr-image");
   const qrFallback = document.getElementById("payment-qr-fallback");
-  const copyCardButton = document.getElementById("copy-card-button");
-  const copyFeedback = document.getElementById("payment-copy-feedback");
-  const paymentCardBlock = document.getElementById("payment-card-block");
 
-  const qrImageSrc = paymentSection.dataset.qrImage || "";
-  const bankName = paymentSection.dataset.bankName || "Banco por definir";
-  const accountHolder = paymentSection.dataset.accountHolder || "Beneficiario por definir";
-  const cardNumber = paymentSection.dataset.cardNumber || "";
   const paymentWhatsappNumber = paymentSection.dataset.whatsappNumber || whatsappNumber;
-
-  accountHolderDisplay.textContent = accountHolder;
-  bankNameDisplay.textContent = bankName;
-  if (cardNumberDisplay) {
-    cardNumberDisplay.textContent = cardNumber || "Dato por definir";
-  }
-
-  if (!cardNumber) {
-    paymentCardBlock?.setAttribute("hidden", "hidden");
-    copyCardButton?.setAttribute("hidden", "hidden");
-  }
-
-  const copyText = async (value, successMessage) => {
-    if (!value) {
-      return;
-    }
-
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(value);
-      } else {
-        const tempInput = document.createElement("textarea");
-        tempInput.value = value;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand("copy");
-        tempInput.remove();
-      }
-
-      if (copyFeedback) {
-        copyFeedback.textContent = successMessage;
-      }
-    } catch {
-      if (copyFeedback) {
-        copyFeedback.textContent = "No se pudo copiar automáticamente. Intenta copiarlo manualmente.";
-      }
-    }
-  };
 
   const updateProofLink = () => {
     const total = formatCurrency(paymentTotalInput?.value);
@@ -814,21 +1078,9 @@ if (paymentSection) {
     updateOrderWhatsappLink();
   };
 
-  if (qrImageSrc) {
-    qrImage.src = qrImageSrc;
-  } else {
-    qrImage.hidden = true;
+  if (qrFallback) {
     qrFallback.hidden = false;
   }
-
-  qrImage?.addEventListener("error", () => {
-    qrImage.hidden = true;
-    qrFallback.hidden = false;
-  });
-
-  copyCardButton?.addEventListener("click", () => {
-    copyText(cardNumber.replace(/\s+/g, ""), "Tarjeta copiada.");
-  });
 
   paymentTotalInput?.addEventListener("input", updateProofLink);
   customerNameInput?.addEventListener("input", updateProofLink);
@@ -840,21 +1092,12 @@ if (paymentSection) {
   updatePaymentVisibility();
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   const counterEl = document.getElementById("visitCounter");
   if (!counterEl) {
-    console.error("No existe #visitCounter en el DOM");
     return;
   }
 
-  try {
-    const response = await fetch("https://api.countapi.xyz/hit/karlitoshotdogscom/home_visits");
-    const data = await response.json();
-    counterEl.textContent = data && typeof data.value === "number"
-      ? data.value.toLocaleString()
-      : "—";
-  } catch (error) {
-    console.error("Falló CountAPI:", error);
-    counterEl.textContent = "—";
-  }
+  counterEl.textContent = "—";
+  counterEl.title = "Contador externo desactivado para uso local.";
 });

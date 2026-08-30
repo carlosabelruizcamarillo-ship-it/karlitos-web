@@ -4,18 +4,68 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Karlitos Hot Dogs</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <meta name="description" content="Menú digital oficial de Karlitos Hot Dogs en San José del Cabo: hot dogs, hamburguesas, boneless, alitas, súper burros, tortitas, promociones y pedidos por WhatsApp." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://karlitoshotdogs.com/" />
+  <meta property="og:type" content="restaurant" />
+  <meta property="og:locale" content="es_MX" />
+  <meta property="og:site_name" content="Karlitos Hot Dogs" />
+  <meta property="og:title" content="Karlitos Hot Dogs | Menú digital oficial" />
+  <meta property="og:description" content="Hot dogs, hamburguesas, boneless, alitas, súper burros, tortitas y promociones en San José del Cabo. Consulta precios y arma tu pedido por WhatsApp." />
+  <meta property="og:url" content="https://karlitoshotdogs.com/" />
+  <meta property="og:image" content="https://karlitoshotdogs.com/img/combo-familiar.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#b70610" />
+  <link rel="stylesheet" href="./styles.css?v=20260425-pedido-clean" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FastFoodRestaurant",
+      "name": "Karlitos Hot Dogs",
+      "url": "https://karlitoshotdogs.com/",
+      "image": "https://karlitoshotdogs.com/img/combo-familiar.jpg",
+      "description": "Menú digital oficial de Karlitos Hot Dogs en San José del Cabo con hot dogs, hamburguesas, boneless, alitas, súper burros, tortitas y promociones.",
+      "servesCuisine": ["Hot dogs", "Hamburguesas", "Boneless", "Alitas", "Súper burros", "Tortitas"],
+      "priceRange": "$",
+      "telephone": "+526242112620",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Avenida Laurel entre Cascalozuchil",
+        "addressLocality": "San José del Cabo",
+        "addressRegion": "B.C.S.",
+        "postalCode": "23436",
+        "addressCountry": "MX"
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Tuesday", "Wednesday", "Thursday"],
+          "opens": "17:00",
+          "closes": "00:30"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Friday", "Saturday", "Sunday"],
+          "opens": "17:00",
+          "closes": "01:00"
+        }
+      ],
+      "hasMenu": "https://karlitoshotdogs.com/#menu"
+    }
+  </script>
 </head>
 <body>
   <header>
-    <p>Ordena fácil por WhatsApp 🔥</p>
-    <h1>Karlitos Hot Dogs</h1>
-    <div id="visitCounterDebug" class="visit-counter-debug">
-      <span>Visitas:</span>
-      <strong id="visitCounter">Cargando...</strong>
-    </div>
+    <p>Ordena fácil por WhatsApp</p>
+    <h1>
+      <span class="brand-logo" aria-hidden="true">
+        <img src="./img/logo-karlitos-circular.png" alt="" />
+      </span>
+      Karlitos Hot Dogs
+    </h1>
     <nav>
       <a href="#menu">Menú</a>
+      <a href="./menu-digital.html">Menú completo</a>
       <a href="#promociones">Promociones</a>
       <a href="#ubicacion">Ubicación</a>
       <a href="#whatsapp">Pedidos por WhatsApp</a>
@@ -23,29 +73,46 @@
   </header>
 
   <main>
-    <section>
-      <p>Street food</p>
-      <h2 class="hero-brand"><span>Karlitos Hot Dogs</span><img src="./img/logo-hero-karlitos.png" alt="Logo de Karlitos Hot Dogs" /></h2>
-      <p>
-        Sabor callejero bien hecho en Los Cabos: hot dogs, hamburguesas,
-        boneless, burros y antojos servidos al momento con ese toque
-        rendidor que hace volver.
-      </p>
-      <p class="operation-note">
-        Consumo en local: ordena y paga en caja. Este menú digital es para consultar productos y precios.
-        WhatsApp es para pedidos para llevar o anticipados. Si ya estás en el local y quieres algo extra, pídelo en caja.
-      </p>
-      <p>Preparado al momento</p>
-      <p>Pedidos directos</p>
-      <p>Martes a domingo</p>
-      <a href="#menu">Menú digital</a>
+    <section class="hero-section">
+      <div class="hero-copy">
+        <p>Nuevo menú digital</p>
+        <h2 class="hero-brand">
+          <span>Karlitos</span>
+          <span>Hot Dogs</span>
+          <span class="hero-brand-badges" aria-label="Redes sociales">
+            <a
+              class="hero-social-link"
+              href="https://www.facebook.com/search/top?q=Karlitos%20Hot%20Dogs%20San%20Jos%C3%A9%20del%20Cabo"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Abrir Karlitos Hot Dogs en Facebook"
+              title="Facebook"
+            >f</a>
+          </span>
+        </h2>
+        <div class="hero-facts" aria-label="Datos rápidos">
+          <span>Horario: martes a domingo desde 5:00 PM. Descansamos los lunes.</span>
+        </div>
+        <div class="hero-actions">
+          <a href="./menu-digital.html">Menú completo</a>
+        </div>
+      </div>
+      <figure class="hero-visual">
+        <img src="./img/combo-familiar.jpg" alt="Combo familiar de Karlitos Hot Dogs" />
+        <figcaption>Combo familiar · Domingo</figcaption>
+      </figure>
     </section>
 
-    <section>
-      <p>Más pedido</p>
-      <h2>Hot Dog súper especial</h2>
-      <p>Carne, queso, tocino y papitas dentro en un solo antojo.</p>
-      <strong>$85</strong>
+    <section class="featured-special" data-product-name="Hot Dog súper especial" data-product-price="85">
+      <figure class="featured-special__image">
+        <img src="./img/hot-dog-super-especial.png" alt="Hot Dog súper especial de Karlitos" />
+      </figure>
+      <div>
+        <p>Más pedido</p>
+        <h2>Hot Dog súper especial</h2>
+        <p>Carne, queso, tocino y papitas dentro en un solo antojo.</p>
+      </div>
+      <strong><span>$85</span></strong>
     </section>
 
     <section id="promociones">
@@ -77,18 +144,35 @@
         <h3>3 Hamburguesas</h3>
         <p>Promo fuerte para media semana y fin de semana, ideal para pedir en combo.</p>
         <b>$160</b>
-        <p>+ papas y agua — $90</p>
+        <div
+          class="promo-addon"
+          data-addon-name="Extra papas y agua para promo hamburguesas"
+          data-addon-price="90"
+          aria-label="Agregar papas y agua por 90 pesos"
+        >
+          <div>
+            <span>Agregar papas y agua</span>
+            <strong>+$90</strong>
+          </div>
+          <div class="promo-addon__quantity">
+            <button type="button" data-addon-action="decrease" aria-label="Quitar papas y agua">-</button>
+            <span>0</span>
+            <button type="button" data-addon-action="increase" aria-label="Agregar papas y agua">+</button>
+          </div>
+        </div>
         <button class="add-to-cart" type="button">Agregar al pedido</button>
       </article>
 
       <article class="promo-item" data-product-name="Domingo · Combo Familiar" data-product-price="460">
         <img src="./img/combo-familiar.jpg" alt="Combo Familiar Karlitos" />
-        <span>🔥 Promo del día</span>
-        <strong>Domingo · Combo Familiar</strong>
-        <h3>3 hamburguesas + boneless + papas + 2 refrescos</h3>
-        <p>La opción más completa de la semana para pedir en familia y resolver toda la cena.</p>
-        <b>$460</b>
-        <button class="add-to-cart" type="button">Agregar al pedido</button>
+        <div class="promo-content">
+          <span>🔥 Promo del día</span>
+          <strong>Domingo · Combo Familiar</strong>
+          <h3>3 hamburguesas + boneless + papas + 2 refrescos</h3>
+          <p>La opción más completa de la semana para pedir en familia y resolver toda la cena.</p>
+          <b>$460</b>
+          <button class="add-to-cart" type="button">Agregar al pedido</button>
+        </div>
       </article>
     </section>
 
@@ -189,7 +273,9 @@
     <section id="whatsapp">
       <p>Tu pedido</p>
       <h2>Revisa antes de mandar a pago</h2>
-      <p>Agrega productos, ajusta cantidades y revisa el total antes de elegir cómo vas a pagar.</p>
+      <p class="operation-note">
+        Consumo en local: ordena y paga en caja. Este menú digital es para consultar productos y precios. WhatsApp es para pedidos para llevar o anticipados.
+      </p>
 
       <div class="order-summary">
         <p class="summary-helper">Productos agregados</p>
@@ -206,15 +292,11 @@
 
     <section
       id="pago"
-      data-qr-image="./qr-transferencia-web-karlitos.png"
-      data-bank-name="Bancoppel"
-      data-account-holder="ARISVE CAMARILLO GERALDO"
-      data-card-number="4169 1608 8736 0957"
       data-whatsapp-number="526242112620"
     >
       <p>Método de pago</p>
       <h2>Confirma tu pedido de forma simple</h2>
-      <p>Elige cómo quieres pagar. Si prefieres transferencia o QR, aquí mismo puedes ver el total y mandar tu comprobante.</p>
+      <p>Elige cómo quieres pagar. Los datos de transferencia se confirman directamente en caja o por WhatsApp.</p>
 
       <div class="payment-layout">
         <div class="payment-form">
@@ -236,19 +318,14 @@
 
             <label class="payment-option">
               <input type="radio" name="payment-method" value="transfer" />
-              <span>Transferencia / QR</span>
-            </label>
-
-            <label class="payment-option">
-              <input type="radio" name="payment-method" value="cash" />
-              <span>Efectivo al recoger</span>
+              <span>Transferencia pendiente de confirmación</span>
             </label>
           </div>
         </div>
 
         <div id="payment-qr-panel" class="payment-qr-panel" hidden>
-          <p class="payment-panel-title">Transferencia / QR</p>
-          <p class="payment-panel-copy">Puedes pagar escaneando el QR o copiando los datos bancarios manualmente.</p>
+          <p class="payment-panel-title">Transferencia pendiente de confirmación</p>
+          <p class="payment-panel-copy">Pago por transferencia pendiente de aprobación humana. Solicita los datos actualizados directamente en caja o por WhatsApp.</p>
 
           <div class="payment-summary payment-summary--extended">
             <div>
@@ -256,29 +333,19 @@
               <strong id="payment-total-display">$0</strong>
             </div>
             <div>
-              <span>Beneficiario</span>
-              <strong id="account-holder-display">ARISVE CAMARILLO GERALDO</strong>
-            </div>
-            <div>
-              <span>Banco</span>
-              <strong id="bank-name-display">Bancoppel</strong>
-            </div>
-            <div id="payment-card-block">
-              <span>Tarjeta</span>
-              <strong id="card-number-display">4169 1608 8736 0957</strong>
+              <span>Estado</span>
+              <strong>Datos de transferencia no publicados</strong>
             </div>
           </div>
 
           <div class="payment-qr-box">
-            <img id="payment-qr-image" src="./qr-transferencia-web-karlitos.png" alt="QR de pago por transferencia" />
-            <p id="payment-qr-fallback" class="payment-qr-fallback" hidden>No se pudo cargar el QR de pago. Escríbenos por WhatsApp para enviártelo directo.</p>
-            <p class="payment-qr-tip">(Mantén presionado el QR para abrirlo)</p>
+            <p id="payment-qr-fallback" class="payment-qr-fallback">Datos de transferencia no publicados en esta versión. Confírmalos directamente con Karlitos Hot Dogs.</p>
+            <p class="payment-qr-tip">No se incluye QR de pago en esta versión sanitizada.</p>
           </div>
 
-          <div class="payment-copy-actions">
-            <button id="copy-card-button" type="button">Copiar tarjeta</button>
+          <div class="payment-safe-actions">
+            <a href="https://wa.me/526242112620?text=Hola%2C%20quiero%20confirmar%20los%20datos%20actualizados%20de%20pago%20para%20mi%20pedido." target="_blank" rel="noreferrer">Solicitar datos de pago por WhatsApp</a>
           </div>
-          <p id="payment-copy-feedback" class="payment-copy-feedback" aria-live="polite"></p>
 
           <p class="payment-confirmation-note">Tu pedido se confirma en cuanto verifiquemos el pago.</p>
 
@@ -300,14 +367,19 @@
       <h2>Operación local en Los Cabos con atención nocturna y pedidos directos.</h2>
       <p>En una esquina, enfrente de una purificadora de agua, Avenida Laurel entre Cascalozuchil, 23436 San José del Cabo, B.C.S.</p>
       <p>Descansamos los lunes</p>
-      <p>Martes a jueves: 5:30 PM a 12:30 AM</p>
-      <p>Viernes a domingo: 5:30 PM a 1:00 AM</p>
+      <p>Martes a jueves: 5:00 PM a 12:30 AM</p>
+      <p>Viernes a domingo: 5:00 PM a 1:00 AM</p>
       <a
         href="https://www.google.com/maps/search/?api=1&query=Karlitos+Hotdogs%2C+Avenida+Laurel+entre+Cascalozuchil%2C+23436+San+Jos%C3%A9+del+Cabo%2C+B.C.S."
         target="_blank"
         rel="noreferrer"
       >Ver en el mapa</a>
     </section>
+
+    <div class="visit-counter">
+      <span>Visitas:</span>
+      <strong id="visitCounter">Cargando...</strong>
+    </div>
 
     <div id="boneless-modal" class="selection-modal" hidden>
       <div class="selection-modal__backdrop" data-close-boneless-modal></div>
@@ -317,45 +389,71 @@
         <h3 id="boneless-modal-title">Elige si lo quieres en boneless o alitas</h3>
         <p class="selection-modal__copy" id="boneless-modal-copy">Selecciona el tipo y tus salsas para agregarlo al pedido.</p>
 
-        <div class="selection-modal__choices">
-          <button type="button" class="selection-choice" data-protein-choice="Boneless">Boneless</button>
-          <button type="button" class="selection-choice" data-protein-choice="Alitas">Alitas</button>
+        <div class="selection-modal__section">
+          <div class="selection-modal__section-head">
+            <span>1</span>
+            <p>Tipo</p>
+          </div>
+          <div class="selection-modal__choices" role="group" aria-label="Tipo de producto">
+            <button type="button" class="selection-choice" data-protein-choice="Boneless" aria-pressed="false">Boneless</button>
+            <button type="button" class="selection-choice" data-protein-choice="Alitas" aria-pressed="false">Alitas</button>
+          </div>
         </div>
 
         <div class="selection-modal__step" data-boneless-sauce-step hidden>
-        <div class="option-box option-box--compact sauce-selector" data-sauce-target="boneless-modal">
-          <p class="option-box__title">Elige 1 o hasta 2 salsas incluidas</p>
-          <div class="sauce-options">
-            <label><input type="checkbox" value="Tamarindo" /> <span>Tamarindo</span></label>
-            <label><input type="checkbox" value="Buffalo" /> <span>Buffalo</span></label>
-            <label><input type="checkbox" value="BBQ" /> <span>BBQ</span></label>
-            <label><input type="checkbox" value="BBQ picante" /> <span>BBQ picante</span></label>
-            <label><input type="checkbox" value="Mango habanero" /> <span>Mango habanero</span></label>
-            <label><input type="checkbox" value="Piña Hot" /> <span>Piña Hot</span></label>
+          <div class="selection-modal__section">
+            <div class="selection-modal__section-head selection-modal__section-head--split">
+              <span>2</span>
+              <p>Salsas incluidas</p>
+              <strong class="sauce-selector__counter" data-sauce-counter>Seleccionadas: 0 / 2</strong>
+            </div>
+            <div class="option-box option-box--compact sauce-selector" data-sauce-target="boneless-modal">
+              <div class="sauce-options">
+                <label><input type="checkbox" value="Tamarindo" /> <span>Tamarindo</span></label>
+                <label><input type="checkbox" value="Buffalo" /> <span>Buffalo</span></label>
+                <label><input type="checkbox" value="BBQ" /> <span>BBQ</span></label>
+                <label><input type="checkbox" value="BBQ picante" /> <span>BBQ picante</span></label>
+                <label><input type="checkbox" value="Mango habanero" /> <span>Mango habanero</span></label>
+                <label><input type="checkbox" value="Piña Hot" /> <span>Piña Hot</span></label>
+              </div>
+              <p class="option-box__hint sauce-selector__hint">Puedes elegir hasta 2 salsas sin costo extra.</p>
+            </div>
           </div>
-          <p class="option-box__hint sauce-selector__hint">Puedes elegir hasta 2 salsas sin costo extra.</p>
+
+          <div class="selection-modal__section">
+            <div class="selection-modal__section-head">
+              <span>3</span>
+              <p>Extra</p>
+            </div>
+            <div class="option-box option-box--compact sauce-extra">
+              <label class="sauce-extra__toggle">
+                <input type="checkbox" id="modal-extra-sauce-toggle" />
+                <span>+ Agregar salsa extra +$20</span>
+              </label>
+              <div class="sauce-extra__controls" data-extra-sauce-controls-modal hidden>
+                <select id="modal-extra-sauce-select" class="sauce-extra__select-native" aria-label="Salsa extra" tabindex="-1">
+                  <option value="">Elige salsa extra</option>
+                  <option value="Tamarindo">Tamarindo</option>
+                  <option value="Buffalo">Buffalo</option>
+                  <option value="BBQ">BBQ</option>
+                  <option value="BBQ picante">BBQ picante</option>
+                  <option value="Mango habanero">Mango habanero</option>
+                  <option value="Piña Hot">Piña Hot</option>
+                </select>
+                <div class="sauce-extra__chips" data-extra-sauce-options-modal aria-label="Elige salsa extra">
+                  <button type="button" data-extra-sauce-choice="Tamarindo" aria-pressed="false">Tamarindo</button>
+                  <button type="button" data-extra-sauce-choice="Buffalo" aria-pressed="false">Buffalo</button>
+                  <button type="button" data-extra-sauce-choice="BBQ" aria-pressed="false">BBQ</button>
+                  <button type="button" data-extra-sauce-choice="BBQ picante" aria-pressed="false">BBQ picante</button>
+                  <button type="button" data-extra-sauce-choice="Mango habanero" aria-pressed="false">Mango habanero</button>
+                  <button type="button" data-extra-sauce-choice="Piña Hot" aria-pressed="false">Piña Hot</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="option-box option-box--compact sauce-extra">
-          <label class="sauce-extra__toggle">
-            <input type="checkbox" id="modal-extra-sauce-toggle" />
-            <span>Agregar salsa extra +$20 por porción</span>
-          </label>
-          <div class="sauce-extra__controls" data-extra-sauce-controls-modal hidden>
-            <select id="modal-extra-sauce-select" aria-label="Salsa extra">
-              <option value="">Elige salsa extra</option>
-              <option value="Tamarindo">Tamarindo</option>
-              <option value="Buffalo">Buffalo</option>
-              <option value="BBQ">BBQ</option>
-              <option value="BBQ picante">BBQ picante</option>
-              <option value="Mango habanero">Mango habanero</option>
-              <option value="Piña Hot">Piña Hot</option>
-            </select>
-          </div>
-        </div>
-        </div>
-
-        <button id="confirm-boneless-selection" class="selection-modal__confirm" type="button">Agregar al pedido</button>
+        <button id="confirm-boneless-selection" class="selection-modal__confirm" type="button" disabled>Agregar al pedido</button>
       </div>
     </div>
 
@@ -395,25 +493,35 @@
     </div>
   </main>
 
-  <a
-    href="https://www.google.com/maps/search/?api=1&query=Karlitos+Hotdogs%2C+Avenida+Laurel+entre+Cascalozuchil%2C+23436+San+Jos%C3%A9+del+Cabo%2C+B.C.S."
-    aria-label="Ubicación"
-    title="Cómo llegar"
-    target="_blank"
-    rel="noreferrer"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
+  <div class="floating-actions" aria-label="Acciones rápidas">
+    <a class="floating-action floating-action--pay" href="#pago" aria-label="Ir a pagar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#fff" d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 4h16V7H4v2Zm3 5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm3 0h5a1 1 0 1 0 0-2h-5a1 1 0 1 0 0 2Z" />
+      </svg>
+      <span>Pagar</span>
+    </a>
+
+    <a
+      class="floating-action floating-action--map"
+      href="https://www.google.com/maps/search/?api=1&query=Karlitos+Hotdogs%2C+Avenida+Laurel+entre+Cascalozuchil%2C+23436+San+Jos%C3%A9+del+Cabo%2C+B.C.S."
+      aria-label="Ubicación"
+      title="Cómo llegar"
+      target="_blank"
+      rel="noreferrer"
     >
-      <path
-        fill="#fff"
-        d="M12 22s7-5.77 7-12a7 7 0 1 0-14 0c0 6.23 7 12 7 12Zm0-9.5A2.5 2.5 0 1 0 12 7a2.5 2.5 0 0 0 0 5.5Z"
-      />
-    </svg>
-    <span>Llegar</span>
-  </a>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          fill="#fff"
+          d="M12 22s7-5.77 7-12a7 7 0 1 0-14 0c0 6.23 7 12 7 12Zm0-9.5A2.5 2.5 0 1 0 12 7a2.5 2.5 0 0 0 0 5.5Z"
+        />
+      </svg>
+      <span>Llegar</span>
+    </a>
+  </div>
 
   <script src="./script.js"></script>
 </body>

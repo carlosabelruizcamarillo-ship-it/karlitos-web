@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menú digital | Karlitos Hot Dogs</title>
+  <meta name="description" content="Menú digital de Karlitos Hot Dogs con precios, promociones y pedidos por WhatsApp." />
+  <link rel="canonical" href="https://karlitoshotdogs.com/menu-digital.html" />
+  <meta property="og:title" content="Menú digital | Karlitos Hot Dogs" />
+  <meta property="og:description" content="Consulta el menú visual de Karlitos Hot Dogs y pide por WhatsApp." />
+  <meta property="og:image" content="https://karlitoshotdogs.com/img/menu-digital-karlitos-20260502.jpg" />
+  <meta property="og:url" content="https://karlitoshotdogs.com/menu-digital.html" />
+  <meta name="theme-color" content="#b70610" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --red: #d80d17;
+      --cream: #fff8ed;
+      --dark: #080102;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 14px;
+      background:
+        radial-gradient(circle at top, rgba(216, 13, 23, 0.28), transparent 34%),
+        linear-gradient(180deg, #180204, var(--dark));
+      color: var(--cream);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      max-width: 920px;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(20px, 5vw, 34px);
+      line-height: 1;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .actions a {
+      min-height: 40px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff3b32 0%, #d80d17 52%, #760006 100%);
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 2px solid rgba(255, 248, 237, 0.12);
+      border-radius: 18px;
+      background: #000;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+    }
+
+    @media (max-width: 620px) {
+      body {
+        padding: 8px;
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .actions {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .actions a {
+        flex: 1 1 auto;
+        text-align: center;
+      }
+
+      img {
+        border-radius: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Karlitos Hot Dogs</h1>
+    <nav class="actions" aria-label="Acciones rápidas">
+      <a href="./index.html">Web oficial</a>
+      <a href="https://wa.me/526242112620" target="_blank" rel="noreferrer">WhatsApp</a>
+    </nav>
+  </header>
+
+  <main>
+    <img src="./img/menu-digital-karlitos-20260502.jpg" alt="Menú visual completo de Karlitos Hot Dogs" />
+  </main>
+</body>
+</html>
