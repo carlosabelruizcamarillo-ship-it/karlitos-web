@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ordenar | Karlitos Hot Dogs</title>
+  <meta name="description" content="Arma tu pedido de Karlitos Hot Dogs en pocos pasos y envialo por WhatsApp." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://karlitoshotdogs.com/ordenar/" />
+  <meta name="theme-color" content="#b70610" />
+  <link rel="stylesheet" href="./styles.css?v=12" />
+</head>
+<body>
+  <img class="mascot-watermark" src="./assets/mascota-karlitos.png" alt="" aria-hidden="true" />
+  <header class="order-header">
+    <div class="brand-lockup">
+      <span class="brand-mark" aria-hidden="true">
+        <img src="../img/logo-hero-karlitos.png" alt="" />
+      </span>
+      <h1>¿Qué se te antoja?</h1>
+    </div>
+    <button id="resume-clear" class="ghost-button" type="button" hidden>Empezar de nuevo</button>
+  </header>
+
+  <details class="order-guide">
+    <summary>
+      <strong>¿Cómo ordenar?</strong>
+      <span>1. Elige → 2. Personaliza → 3. Revisa → 4. Envía por WhatsApp</span>
+    </summary>
+    <ol>
+      <li>Agrega lo que quieras.</li>
+      <li>Personalízalo a tu gusto.</li>
+      <li>Revisa tu pedido.</li>
+      <li>Elige si vas a recoger o estás en Karlitos.</li>
+      <li>Envía tu pedido por WhatsApp.</li>
+    </ol>
+  </details>
+
+  <nav class="category-nav" aria-label="Categorias del menu">
+    <a href="#promos" data-nav-section="promos">🔥 Promos</a>
+    <a href="#hot-dogs" data-nav-section="hot-dogs">🌭 Hot Dogs</a>
+    <a href="#hamburguesas" data-nav-section="hamburguesas">🍔 Burgers</a>
+    <a href="#boneless-alitas" data-nav-section="boneless-alitas">🍗 Boneless</a>
+    <a href="#burros" data-nav-section="burros">🌯 Burros</a>
+    <a href="#tortitas" data-nav-section="tortitas">🥪 Tortitas</a>
+    <a href="#papas" data-nav-section="papas">🍟 Papas</a>
+    <a href="#bebidas" data-nav-section="bebidas">🥤 Bebidas</a>
+  </nav>
+
+  <main>
+    <section id="resume-panel" class="notice" hidden>
+      <div>
+        <strong>Pedido guardado</strong>
+        <p>Puedes retomarlo o empezar desde cero.</p>
+      </div>
+      <div class="notice-actions">
+        <button id="resume-order" type="button">Retomar pedido</button>
+        <button id="start-fresh" type="button">Nuevo</button>
+      </div>
+    </section>
+
+    <div id="menu-root" class="menu-root"></div>
+
+    <section id="checkout" class="checkout" hidden>
+      <div class="section-head checkout-title">
+        <p>Tu pedido</p>
+        <h2>Revisa y manda por WhatsApp</h2>
+        <span>Revisa tu pedido antes de continuar. Karlitos preparará tus productos con las indicaciones mostradas aquí.</span>
+      </div>
+
+      <div id="checkout-items" class="checkout-items"></div>
+
+      <button id="modify-order" class="secondary-button" type="button">Modificar pedido</button>
+
+      <div id="drink-upsell" class="upsell" hidden>
+        <p>¿Algo para tomar?</p>
+        <div class="upsell-actions">
+          <button type="button" data-upsell-id="agua-fruta-litro">Jamaica / Agua de fruta 1 L <span>$60</span></button>
+          <button type="button" data-upsell-id="refresco">Refresco <span>$40</span></button>
+          <button type="button" data-upsell-id="agua-natural">Agua natural <span>$30</span></button>
+          <button type="button" data-upsell-skip>No, gracias</button>
+        </div>
+      </div>
+
+      <fieldset class="mode-field">
+        <legend>Modalidad</legend>
+        <label>
+          <input type="radio" name="order-mode" value="Recoger" checked />
+          <span>Voy a recoger</span>
+        </label>
+        <label>
+          <input type="radio" name="order-mode" value="Estoy en Karlitos" />
+          <span>Estoy en Karlitos</span>
+        </label>
+        <label class="disabled-option">
+          <input type="radio" name="order-mode" value="Domicilio" disabled />
+          <span>Domicilio pendiente</span>
+        </label>
+      </fieldset>
+
+      <section id="payment-rules" class="payment-rules">
+        <div id="pickup-payment" class="payment-box">
+          <strong>Recoger: transferencia antes de preparar</strong>
+          <p>Realiza tu transferencia con los datos oficiales de Karlitos y envía tu pedido junto con el comprobante por WhatsApp. Tu pedido comenzará a prepararse cuando Karlitos confirme el pago.</p>
+          <label class="confirm-transfer">
+            <input id="transfer-ready" type="checkbox" />
+            <span>Ya hice mi transferencia</span>
+          </label>
+        </div>
+
+        <div id="onsite-payment" class="payment-box" hidden>
+          <strong>En Karlitos</strong>
+          <p>Puedes pagar en caja o por transferencia. El equipo confirmará recepción antes de cerrar el pedido.</p>
+          <div class="inline-options" role="radiogroup" aria-label="Forma de pago en Karlitos">
+            <label><input type="radio" name="onsite-payment" value="Caja" checked /> Caja</label>
+            <label><input type="radio" name="onsite-payment" value="Transferencia" /> Transferencia</label>
+          </div>
+        </div>
+      </section>
+
+      <label class="name-field">
+        <span>Nombre opcional</span>
+        <input id="customer-name" type="text" autocomplete="name" placeholder="Ej. Carlos" />
+      </label>
+
+      <div class="checkout-total">
+        <span>Total estimado</span>
+        <strong id="checkout-total">$0</strong>
+      </div>
+
+      <a id="send-whatsapp" class="whatsapp-button is-disabled" href="https://wa.me/526242112620" target="_blank" rel="noreferrer" aria-disabled="true">Enviar pedido por WhatsApp</a>
+    </section>
+  </main>
+
+  <aside id="cart-bar" class="cart-bar" hidden>
+    <div>
+      <span>Tu pedido</span>
+      <strong id="cart-bar-summary">0 productos · $0</strong>
+    </div>
+    <button id="continue-order" type="button">Ver pedido →</button>
+  </aside>
+
+  <div id="custom-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <form class="sheet" id="custom-form" aria-labelledby="custom-title">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <div class="sheet-head">
+        <div>
+          <p>Personalizar</p>
+          <h2 id="custom-title">Producto</h2>
+          <span id="custom-price">$0</span>
+        </div>
+        <button type="button" class="icon-button" data-close-modal aria-label="Cerrar">×</button>
+      </div>
+
+      <div id="bulk-choice" class="bulk-choice" hidden>
+        <p>¿Todas iguales?</p>
+        <div>
+          <label><input type="radio" name="bulk-mode" value="same" checked /> Sí, todas iguales</label>
+          <label><input type="radio" name="bulk-mode" value="split" /> Personalizar cada una</label>
+        </div>
+      </div>
+
+      <label class="all-in" data-global-custom>
+        <input id="with-everything" type="checkbox" checked />
+        <span>Mantener con todo</span>
+      </label>
+
+      <div class="sheet-section" data-global-custom>
+        <p>Quitar ingredientes</p>
+        <div id="ingredient-options" class="chip-grid"></div>
+      </div>
+
+      <div class="sheet-section" data-global-custom>
+        <p>Cebolla</p>
+        <div class="segmented">
+          <label><input type="radio" name="onion" value="asada" checked /> Asada</label>
+          <label><input type="radio" name="onion" value="cruda" /> Cruda</label>
+          <label><input type="radio" name="onion" value="sin cebolla" /> Sin cebolla</label>
+        </div>
+      </div>
+
+      <div class="sheet-section" data-global-custom>
+        <p>Opciones gratis</p>
+        <div class="chip-grid">
+          <label><input type="checkbox" name="free-option" value="chipotle" /> Chipotle</label>
+          <label><input type="checkbox" name="free-option" value="queso amarillo tipo nachos" /> Queso amarillo</label>
+        </div>
+      </div>
+
+      <label class="note-field" data-global-custom>
+        <span>Nota especial opcional</span>
+        <textarea id="custom-note" rows="2" maxlength="120" placeholder="Ej. salsa aparte"></textarea>
+      </label>
+
+      <div id="unit-customizations" class="unit-customizations" hidden></div>
+
+      <button class="primary-button" type="submit">Agregar personalizado</button>
+    </form>
+  </div>
+
+  <div id="boneless-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-close-boneless></div>
+    <form class="sheet" id="boneless-form" aria-labelledby="boneless-title">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <div class="sheet-head">
+        <div>
+          <p>Boneless y Alitas</p>
+          <h2 id="boneless-title">Elige tipo y salsas</h2>
+          <span id="boneless-price">$0</span>
+        </div>
+        <button type="button" class="icon-button" data-close-boneless aria-label="Cerrar">×</button>
+      </div>
+
+      <div class="sheet-section">
+        <p>Tipo</p>
+        <div class="segmented">
+          <label><input type="radio" name="protein" value="Boneless" required /> Boneless</label>
+          <label><input type="radio" name="protein" value="Alitas" /> Alitas</label>
+        </div>
+      </div>
+
+      <div class="sheet-section">
+        <p>Salsas incluidas <span id="sauce-count">0 / 2</span></p>
+        <div id="sauce-options" class="chip-grid"></div>
+        <small>Puedes elegir hasta 2 salsas sin costo extra.</small>
+      </div>
+
+      <label class="all-in">
+        <input id="extra-sauce-enabled" type="checkbox" />
+        <span>Agregar salsa extra +$20</span>
+      </label>
+
+      <label id="extra-sauce-wrap" class="select-field" hidden>
+        <span>Salsa extra</span>
+        <select id="extra-sauce"></select>
+      </label>
+
+      <button class="primary-button" type="submit">Agregar al pedido</button>
+    </form>
+  </div>
+
+  <script src="./app.js?v=12"></script>
+</body>
+</html>
