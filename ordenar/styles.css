@@ -850,6 +850,16 @@ main {
   font-weight: 900;
 }
 
+#modify-order {
+  min-height: 46px;
+  border-color: rgba(21, 12, 7, 0.24);
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 950;
+  box-shadow: 0 10px 22px rgba(255, 179, 65, 0.18);
+}
+
 .mode-field,
 .name-field,
 .checkout-total,
