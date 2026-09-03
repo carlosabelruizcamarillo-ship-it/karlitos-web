@@ -1100,7 +1100,7 @@ body {
 
 .brand-mark img {
   position: absolute;
-  top: 0;
+  top: -2px;
   left: 50%;
   width: 54px;
   height: auto;
