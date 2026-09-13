@@ -5,7 +5,6 @@ const SAUCE_PRICE = 20;
 
 const conTodoIngredients = [
   "tomate",
-  "cebolla",
   "lechuga",
   "crema/mayonesa",
   "mostaza",
@@ -392,7 +391,15 @@ const getUnitEditorMarkup = (unitNumber) => `
   <article class="unit-card" data-unit-card="${unitNumber}">
     <h3>Unidad ${unitNumber}</h3>
     <div class="sheet-section">
-      <p>Quitar ingredientes</p>
+      <p>¿Cómo quieres la cebolla?</p>
+      <div class="segmented" role="radiogroup" aria-label="¿Cómo quieres la cebolla?">
+        <label><input type="radio" name="unit-onion-${unitNumber}" value="asada" checked /> Cebolla asada</label>
+        <label><input type="radio" name="unit-onion-${unitNumber}" value="cruda" /> Cebolla cruda</label>
+        <label><input type="radio" name="unit-onion-${unitNumber}" value="sin cebolla" /> Sin cebolla</label>
+      </div>
+    </div>
+    <div class="sheet-section">
+      <p>Quitar otros ingredientes</p>
       <div class="chip-grid">
         ${conTodoIngredients
           .map(
@@ -404,14 +411,6 @@ const getUnitEditorMarkup = (unitNumber) => `
             `
           )
           .join("")}
-      </div>
-    </div>
-    <div class="sheet-section">
-      <p>Cebolla</p>
-      <div class="segmented">
-        <label><input type="radio" name="unit-onion-${unitNumber}" value="asada" checked /> Asada</label>
-        <label><input type="radio" name="unit-onion-${unitNumber}" value="cruda" /> Cruda</label>
-        <label><input type="radio" name="unit-onion-${unitNumber}" value="sin cebolla" /> Sin cebolla</label>
       </div>
     </div>
     <div class="sheet-section">
