@@ -44,11 +44,11 @@ const categoryLabels = {
 };
 
 const products = [
-  { id: "promo-hotdogs-martes", category: "promos", name: "Promo Martes · 3 Hot Dogs + papas", price: 150, type: "promo", food: true, customizable: false, promo: true },
-  { id: "promo-tortitas-jueves", category: "promos", name: "Promo Jueves · 3 Tortitas", price: 180, type: "promo", food: true, customizable: false, promo: true },
-  { id: "promo-hamburguesas-mv", category: "promos", name: "Promo Miércoles/Viernes · 3 Hamburguesas", price: 160, type: "promo", food: true, customizable: false, promo: true },
+  { id: "promo-hotdogs-martes", category: "promos", name: "Promo Martes · 3 Hot Dogs + papas", price: 150, type: "promo", food: true, customizable: true, pieces: 3, pieceLabel: "Hot Dog", promo: true },
+  { id: "promo-tortitas-jueves", category: "promos", name: "Promo Jueves · 3 Tortitas", price: 180, type: "promo", food: true, customizable: true, pieces: 3, pieceLabel: "Tortita", promo: true },
+  { id: "promo-hamburguesas-mv", category: "promos", name: "Promo Miércoles/Viernes · 3 Hamburguesas", price: 160, type: "promo", food: true, customizable: true, pieces: 3, pieceLabel: "Hamburguesa", promo: true },
   { id: "promo-hamburguesas-extra", category: "promos", name: "Extra papas y agua para promo hamburguesas", price: 90, type: "promo", food: true, customizable: false, promo: true },
-  { id: "combo-familiar-domingo", category: "promos", name: "Domingo · Combo Familiar", price: 460, detail: "3 hamburguesas + boneless + papas + 2 refrescos", type: "promo", food: true, customizable: false, promo: true },
+  { id: "combo-familiar-domingo", category: "promos", name: "Domingo · Combo Familiar", price: 460, detail: "3 hamburguesas + boneless + papas + 2 refrescos", type: "promo", food: true, customizable: true, pieces: 3, pieceLabel: "Hamburguesa", promo: true },
 
   { id: "hotdog-clasico", category: "hot-dogs", name: "Hot Dog clásico", price: 35, type: "con-todo", food: true },
   { id: "hotdog-carne", category: "hot-dogs", name: "Hot Dog con carne", price: 55, type: "con-todo", food: true },
@@ -201,7 +201,7 @@ const renderMenu = () => {
       const rows = products
         .filter((product) => product.category === category.id)
         .map((product) => {
-          const canCustomize = product.type === "con-todo" || product.type === "boneless";
+          const canCustomize = product.type === "con-todo" || product.type === "boneless" || product.customizable;
           const cardName = product.displayName || product.name;
           return `
             <article class="product-row" data-product-id="${product.id}">
@@ -337,6 +337,7 @@ const updateWhatsapp = () => {
 };
 
 const render = () => {
+  $("#resume-clear").hidden = state.cart.length === 0;
   renderCounts();
   renderCartBar();
   renderCheckout();
@@ -353,13 +354,23 @@ const closeModal = (modal) => {
   document.body.style.overflow = "";
 };
 
+const customizationCount = (product) =>
+  Math.max(1, getProductCount(product.id)) * (product.pieces || 1);
+
+const pieceTitle = (index) => activeProduct.pieces
+  ? `Promo ${Math.floor(index / activeProduct.pieces) + 1} · ${activeProduct.pieceLabel} ${index % activeProduct.pieces + 1}`
+  : `Unidad ${index + 1}`;
+
 const openCustomModal = (product) => {
   activeProduct = product;
   $("#custom-title").textContent = product.name;
   $("#custom-price").textContent = formatMoney(product.price);
   $("#custom-note").value = "";
   $("#with-everything").checked = true;
-  $("#bulk-choice").hidden = getProductCount(product.id) < 2;
+  $("#bulk-choice").hidden = customizationCount(product) < 2;
+  $("#bulk-choice > p").textContent = product.pieces
+    ? `${customizationCount(product)} piezas · ¿Todas iguales?`
+    : "¿Todas iguales?";
   const bulkSame = $('input[name="bulk-mode"][value="same"]');
   if (bulkSame) bulkSame.checked = true;
   $("#unit-customizations").hidden = true;
@@ -389,7 +400,7 @@ const openCustomModal = (product) => {
 
 const getUnitEditorMarkup = (unitNumber) => `
   <article class="unit-card" data-unit-card="${unitNumber}">
-    <h3>Unidad ${unitNumber}</h3>
+    <h3>${pieceTitle(unitNumber - 1)}</h3>
     <div class="sheet-section">
       <p>¿Cómo quieres la cebolla?</p>
       <div class="segmented" role="radiogroup" aria-label="¿Cómo quieres la cebolla?">
@@ -428,7 +439,7 @@ const getUnitEditorMarkup = (unitNumber) => `
 `;
 
 const updateBulkModeUI = () => {
-  const quantity = getProductCount(activeProduct?.id);
+  const quantity = customizationCount(activeProduct);
   const split = $('input[name="bulk-mode"]:checked')?.value === "split";
   const unitWrap = $("#unit-customizations");
 
@@ -620,7 +631,29 @@ const initEvents = () => {
     const quantity = getProductCount(activeProduct.id);
     const bulkMode = $('input[name="bulk-mode"]:checked')?.value || "same";
 
-    if (quantity > 1 && bulkMode === "split") {
+    if (activeProduct.pieces) {
+      const promoCount = Math.max(1, quantity);
+      const pieces = bulkMode === "split" ? customLinesByUnit() : [];
+      const common = bulkMode === "split" ? null : customLineFromForm();
+      removeProductLines(activeProduct.id);
+      for (let promo = 0; promo < promoCount; promo += 1) {
+        const details = [];
+        for (let piece = 0; piece < activeProduct.pieces; piece += 1) {
+          const line = common || pieces[promo * activeProduct.pieces + piece];
+          details.push(`${activeProduct.pieceLabel} ${piece + 1}: ${line.customizations.join(", ")}${line.note ? ` · Nota: ${line.note}` : ""}`);
+        }
+        addLine({
+          productId: activeProduct.id,
+          name: activeProduct.name,
+          unitPrice: activeProduct.price,
+          customizations: details,
+          note: "",
+          food: true,
+          drink: false,
+          promo: "Promoción",
+        });
+      }
+    } else if (quantity > 1 && bulkMode === "split") {
       removeProductLines(activeProduct.id);
       customLinesByUnit().forEach((line, index) => {
         addLine({ ...line, customizations: [`Unidad ${index + 1}`, ...line.customizations] }, 1);
@@ -751,7 +784,7 @@ const initEvents = () => {
     saveState();
   });
 
-  $("#resume-clear").addEventListener("click", () => {
+  const startFresh = () => {
     state.cart = [];
     state.customerName = "";
     state.mode = "Recoger";
@@ -761,28 +794,19 @@ const initEvents = () => {
     state.onsitePayment = "Caja";
     $("#customer-name").value = "";
     $('input[name="order-mode"][value="Recoger"]').checked = true;
+    $('input[name="onsite-payment"][value="Caja"]').checked = true;
+    $("#transfer-ready").checked = false;
+    $("#resume-panel").hidden = true;
     localStorage.removeItem(STORAGE_KEY);
     render();
-  });
-
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  $("#resume-clear").addEventListener("click", startFresh);
+  $("#start-fresh").addEventListener("click", startFresh);
   $("#resume-order").addEventListener("click", () => {
     $("#resume-panel").hidden = true;
   });
 
-  $("#start-fresh").addEventListener("click", () => {
-    state.cart = [];
-    state.customerName = "";
-    state.mode = "Recoger";
-    state.skippedUpsell = false;
-    state.view = "menu";
-    state.transferReady = false;
-    state.onsitePayment = "Caja";
-    $("#customer-name").value = "";
-    $('input[name="order-mode"][value="Recoger"]').checked = true;
-    localStorage.removeItem(STORAGE_KEY);
-    $("#resume-panel").hidden = true;
-    render();
-  });
 };
 
 const setActiveNav = (sectionId) => {
