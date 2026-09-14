@@ -1448,7 +1448,7 @@ main {
 .location-fab {
   position: fixed;
   right: max(12px, env(safe-area-inset-right));
-  bottom: calc(110px + env(safe-area-inset-bottom));
+  bottom: calc(16px + env(safe-area-inset-bottom));
   z-index: 46;
   display: flex;
   align-items: center;
