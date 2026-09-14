@@ -212,10 +212,8 @@ const limitBurgerExtras = () => {
 };
 
 const openBurgerExtraOffer = () => {
-  const base = findProduct(BURGER_PROMO_ID).price;
   const extra = findProduct(BURGER_EXTRA_ID).price;
   $("#burger-extra-add").textContent = `Agregar extra +${formatMoney(extra)}`;
-  $("#burger-extra-total").textContent = `Esta promo: ${formatMoney(base)} · Con el extra: ${formatMoney(base + extra)}`;
   openModal($("#burger-extra-modal"));
 };
 
