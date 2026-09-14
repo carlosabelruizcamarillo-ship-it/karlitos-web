@@ -1524,3 +1524,70 @@ body:has(#cart-bar:not([hidden])) {
   font-weight: 800;
   font-size: 14px;
 }
+
+/* Encabezado centrado y guía de pedido más visible. */
+body {
+  --order-header-height: 64px;
+}
+body:has(#resume-clear:not([hidden])) {
+  --order-header-height: 114px;
+}
+.order-header {
+  height: var(--order-header-height);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+}
+.brand-lockup {
+  flex-shrink: 0;
+  text-align: center;
+}
+.order-header h1 {
+  font-size: clamp(20px, 5.6vw, 24px);
+}
+#resume-clear {
+  max-width: none;
+}
+.category-nav {
+  top: var(--order-header-height);
+}
+.menu-section,
+.checkout,
+.notice {
+  scroll-margin-top: calc(var(--order-header-height) + 100px);
+}
+.order-guide {
+  padding: 10px 12px;
+  text-align: center;
+  background: linear-gradient(180deg, #30200f, #171008);
+  border-block: 1px solid rgba(255, 179, 65, 0.65);
+}
+.order-guide summary {
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+}
+.order-guide strong {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 16px;
+}
+.order-guide summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+.order-guide span {
+  font-size: 14px;
+  line-height: 1.35;
+}
+.order-guide ol {
+  width: fit-content;
+  max-width: 100%;
+  margin: 10px auto 0;
+  text-align: left;
+}
