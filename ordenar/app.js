@@ -52,7 +52,7 @@ const products = [
   { id: "promo-hotdogs-martes", category: "promos", name: "Promo Martes · 3 Hot Dogs + papas", price: 150, type: "promo", food: true, customizable: true, pieces: 3, pieceLabel: "Hot Dog", promo: true },
   { id: "promo-tortitas-jueves", category: "promos", name: "Promo Jueves · 3 Tortitas", price: 180, type: "promo", food: true, customizable: true, pieces: 3, pieceLabel: "Tortita", promo: true },
   { id: "promo-hamburguesas-mv", category: "promos", name: "Promo Miércoles/Viernes · 3 Hamburguesas", price: 160, type: "promo", food: true, customizable: true, pieces: 3, pieceLabel: "Hamburguesa", promo: true },
-  { id: "promo-hamburguesas-extra", category: "promos", name: "Extra papas y agua para promo hamburguesas", price: 90, type: "promo", food: true, customizable: false, promo: true },
+  { id: "promo-hamburguesas-extra", category: "promos", name: "Extra para promo hamburguesas: orden de papas + 1 L de agua de Jamaica", price: 90, type: "promo", food: true, customizable: false, promo: true },
   { id: "combo-familiar-domingo", category: "promos", name: "Domingo · Combo Familiar", price: 460, detail: "3 hamburguesas + boneless + papas + 2 refrescos", type: "promo", food: true, customizable: true, pieces: 3, pieceLabel: "Hamburguesa", promo: true },
 
   { id: "hotdog-clasico", category: "hot-dogs", name: "Hot Dog clásico", price: 35, type: "con-todo", food: true },
@@ -214,7 +214,7 @@ const limitBurgerExtras = () => {
 const openBurgerExtraOffer = () => {
   const base = findProduct(BURGER_PROMO_ID).price;
   const extra = findProduct(BURGER_EXTRA_ID).price;
-  $("#burger-extra-add").textContent = `Agregar papas y agua +${formatMoney(extra)}`;
+  $("#burger-extra-add").textContent = `Agregar extra +${formatMoney(extra)}`;
   $("#burger-extra-total").textContent = `Esta promo: ${formatMoney(base)} · Con el extra: ${formatMoney(base + extra)}`;
   openModal($("#burger-extra-modal"));
 };
@@ -245,11 +245,11 @@ const renderMenu = () => {
               </div>
               ${product.id === BURGER_PROMO_ID ? `
                 <div id="burger-extra-inline" class="burger-extra-inline" data-product-id="${BURGER_EXTRA_ID}" hidden>
-                  <div class="product-title"><strong>Papas y agua +${formatMoney(findProduct(BURGER_EXTRA_ID).price)}</strong><span>Opcional · Un extra por promo</span></div>
-                  <div class="qty-control" aria-label="Extras de papas y agua">
-                    <button type="button" data-action="minus" aria-label="Quitar extra de papas y agua">−</button>
+                  <div class="product-title"><strong>Orden de papas + 1 L de agua de Jamaica · +${formatMoney(findProduct(BURGER_EXTRA_ID).price)}</strong><span>Opcional · Un extra por promo</span></div>
+                  <div class="qty-control" aria-label="Extras de orden de papas y 1 L de agua de Jamaica">
+                    <button type="button" data-action="minus" aria-label="Quitar extra de orden de papas y 1 L de agua de Jamaica">−</button>
                     <span data-count="${BURGER_EXTRA_ID}">0</span>
-                    <button id="burger-extra-plus" type="button" data-action="plus" aria-label="Agregar extra de papas y agua">+</button>
+                    <button id="burger-extra-plus" type="button" data-action="plus" aria-label="Agregar extra de orden de papas y 1 L de agua de Jamaica">+</button>
                   </div>
                 </div>` : ""}
             </article>
