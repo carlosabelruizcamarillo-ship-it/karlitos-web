@@ -1591,3 +1591,30 @@ body:has(#resume-clear:not([hidden])) {
   margin: 10px auto 0;
   text-align: left;
 }
+
+/* Extra opcional dentro de la promo de hamburguesas. */
+.burger-extra-inline {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.burger-extra-inline .product-title strong {
+  font-size: 14px;
+  color: var(--gold);
+}
+.burger-extra-inline button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.burger-extra-actions {
+  display: grid;
+  gap: 8px;
+}
+.burger-extra-actions button {
+  min-height: 44px;
+}

@@ -2,6 +2,8 @@ const WHATSAPP_NUMBER = "526242112620";
 const STORAGE_KEY = "karlitos_order_v1";
 const STORAGE_TTL_MS = 6 * 60 * 60 * 1000;
 const SAUCE_PRICE = 20;
+const BURGER_PROMO_ID = "promo-hamburguesas-mv";
+const BURGER_EXTRA_ID = "promo-hamburguesas-extra";
 
 const conTodoIngredients = [
   "tomate",
@@ -190,6 +192,7 @@ const updateLineQuantity = (index, delta) => {
   if (line.quantity <= 0) {
     state.cart.splice(index, 1);
   }
+  if (line.productId === BURGER_PROMO_ID) limitBurgerExtras();
   render();
   saveState();
 };
@@ -197,12 +200,31 @@ const updateLineQuantity = (index, delta) => {
 const getProductCount = (productId) =>
   state.cart.reduce((sum, line) => (line.productId === productId ? sum + line.quantity : sum), 0);
 
+// Each optional extra belongs to one hamburger promo.
+const limitBurgerExtras = () => {
+  let remaining = getProductCount(BURGER_PROMO_ID);
+  state.cart = state.cart.filter((line) => {
+    if (line.productId !== BURGER_EXTRA_ID) return true;
+    line.quantity = Math.min(line.quantity, remaining);
+    remaining -= line.quantity;
+    return line.quantity > 0;
+  });
+};
+
+const openBurgerExtraOffer = () => {
+  const base = findProduct(BURGER_PROMO_ID).price;
+  const extra = findProduct(BURGER_EXTRA_ID).price;
+  $("#burger-extra-add").textContent = `Agregar papas y agua +${formatMoney(extra)}`;
+  $("#burger-extra-total").textContent = `Esta promo: ${formatMoney(base)} · Con el extra: ${formatMoney(base + extra)}`;
+  openModal($("#burger-extra-modal"));
+};
+
 const renderMenu = () => {
   const root = $("#menu-root");
   root.innerHTML = categories
     .map((category) => {
       const rows = products
-        .filter((product) => product.category === category.id)
+        .filter((product) => product.category === category.id && product.id !== BURGER_EXTRA_ID)
         .map((product) => {
           const canCustomize = product.type === "con-todo" || product.type === "boneless" || product.customizable;
           const cardName = product.displayName || product.name;
@@ -221,6 +243,15 @@ const renderMenu = () => {
                 </div>
                 ${canCustomize ? `<button class="customize-button" type="button" data-action="customize">Personalizar</button>` : ""}
               </div>
+              ${product.id === BURGER_PROMO_ID ? `
+                <div id="burger-extra-inline" class="burger-extra-inline" data-product-id="${BURGER_EXTRA_ID}" hidden>
+                  <div class="product-title"><strong>Papas y agua +${formatMoney(findProduct(BURGER_EXTRA_ID).price)}</strong><span>Opcional · Un extra por promo</span></div>
+                  <div class="qty-control" aria-label="Extras de papas y agua">
+                    <button type="button" data-action="minus" aria-label="Quitar extra de papas y agua">−</button>
+                    <span data-count="${BURGER_EXTRA_ID}">0</span>
+                    <button id="burger-extra-plus" type="button" data-action="plus" aria-label="Agregar extra de papas y agua">+</button>
+                  </div>
+                </div>` : ""}
             </article>
           `;
         })
@@ -240,6 +271,8 @@ const renderMenu = () => {
 };
 
 const renderCounts = () => {
+  $("#burger-extra-inline").hidden = getProductCount(BURGER_PROMO_ID) === 0;
+  $("#burger-extra-plus").disabled = getProductCount(BURGER_EXTRA_ID) >= getProductCount(BURGER_PROMO_ID);
   $$("[data-count]").forEach((node) => {
     node.textContent = String(getProductCount(node.dataset.count));
   });
@@ -649,6 +682,7 @@ const bonelessLineFromForm = () => {
 
 const restoreSavedState = (saved) => {
   state.cart = Array.isArray(saved.cart) ? saved.cart : [];
+  limitBurgerExtras();
   state.mode = saved.mode || "Recoger";
   state.customerName = saved.customerName || "";
   state.source = state.source || saved.source || "";
@@ -673,10 +707,12 @@ const initEvents = () => {
     if (!product || !action) return;
 
     if (action === "plus") {
+      if (product.id === BURGER_EXTRA_ID && getProductCount(BURGER_EXTRA_ID) >= getProductCount(BURGER_PROMO_ID)) return;
       if (product.type === "boneless") {
         openBonelessModal(product);
       } else {
         addStandardProduct(product);
+        if (product.id === BURGER_PROMO_ID) openBurgerExtraOffer();
       }
     }
 
@@ -694,6 +730,16 @@ const initEvents = () => {
         openCustomModal(product);
       }
     }
+  });
+
+  $("#burger-extra-add").addEventListener("click", () => {
+    if (!$("#burger-extra-modal").hidden && getProductCount(BURGER_EXTRA_ID) < getProductCount(BURGER_PROMO_ID)) {
+      addStandardProduct(findProduct(BURGER_EXTRA_ID));
+    }
+    closeModal($("#burger-extra-modal"));
+  });
+  $$("[data-close-burger-extra]").forEach((node) => {
+    node.addEventListener("click", () => closeModal($("#burger-extra-modal")));
   });
 
   $("#fries-form").addEventListener("change", updateFriesPrice);
@@ -748,6 +794,7 @@ const initEvents = () => {
     }
 
     closeModal($("#custom-modal"));
+    if (activeProduct.id === BURGER_PROMO_ID && quantity === 0) openBurgerExtraOffer();
   });
 
   $$('input[name="bulk-mode"]').forEach((input) => {
