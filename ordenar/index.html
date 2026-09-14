@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex, follow" />
   <link rel="canonical" href="https://karlitoshotdogs.com/ordenar/" />
   <meta name="theme-color" content="#b70610" />
-  <link rel="stylesheet" href="./styles.css?v=promos-20260913" />
+  <link rel="stylesheet" href="./styles.css?v=papas-20260914" />
 </head>
 <body>
   <img class="mascot-watermark" src="./assets/mascota-karlitos.png" alt="" aria-hidden="true" />
@@ -133,6 +133,7 @@
   </main>
 
   <aside id="cart-bar" class="cart-bar" hidden>
+    <a id="cart-location" target="_blank" rel="noopener noreferrer" aria-label="Cómo llegar a Karlitos Hot Dogs" title="Cómo llegar a Karlitos">📍</a>
     <div>
       <span>Tu pedido</span>
       <strong id="cart-bar-summary">0 productos · $0</strong>
@@ -199,6 +200,22 @@
     </form>
   </div>
 
+  <div id="fries-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-close-fries></div>
+    <form class="sheet" id="fries-form" aria-labelledby="fries-title">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <div class="sheet-head">
+        <div><p>Personalizar · Opcional</p><h2 id="fries-title">Papas</h2></div>
+        <button type="button" class="icon-button" data-close-fries aria-label="Cerrar">×</button>
+      </div>
+      <div id="fries-options"></div>
+      <div class="fries-save-bar">
+        <p id="fries-price" aria-live="polite"></p>
+        <button id="fries-save" class="primary-button" type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
+
   <div id="boneless-modal" class="modal" hidden>
     <div class="modal-backdrop" data-close-boneless></div>
     <form class="sheet" id="boneless-form" aria-labelledby="boneless-title">
@@ -244,6 +261,6 @@
     <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
     <span>Ubicación</span>
   </a>
-  <script src="./app.js?v=promos-20260913"></script>
+  <script src="./app.js?v=papas-20260914"></script>
 </body>
 </html>

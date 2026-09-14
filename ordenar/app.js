@@ -21,6 +21,9 @@ const sauceOptions = [
   "Piña Hot",
 ];
 
+const friesToppings = ["Crema", "Cátsup", "Mostaza", "Queso amarillo", "Chipotle"];
+const friesMeats = ["Asada", "Adobada", "Deshebrada"];
+
 const categories = [
   { id: "promos", label: "Promos" },
   { id: "hot-dogs", label: "Hot Dogs" },
@@ -73,10 +76,10 @@ const products = [
   { id: "tortita-papas", category: "tortitas", name: "Tortita con papas", price: 125, type: "con-todo", food: true },
   { id: "tortita-especial", category: "tortitas", name: "Tortita especial", price: 145, detail: "Queso gratinado, aguacate, tocino y papitas dentro", type: "con-todo", food: true },
 
-  { id: "papas", category: "papas", name: "Papas", displayName: "Sencillas", price: 70, type: "standard", food: true },
-  { id: "salchipapas", category: "papas", name: "Salchipapas", price: 100, type: "standard", food: true },
-  { id: "carnipapas", category: "papas", name: "Carnipapas", price: 110, type: "standard", food: true },
-  { id: "papas-especiales", category: "papas", name: "Papas especiales", displayName: "Especiales", price: 170, detail: "Carne, salchichas y queso gratinado", type: "standard", food: true },
+  { id: "papas", category: "papas", name: "Papas", displayName: "Sencillas", price: 70, type: "fries", customizable: true, food: true },
+  { id: "salchipapas", category: "papas", name: "Salchipapas", price: 100, type: "fries", customizable: true, food: true },
+  { id: "carnipapas", category: "papas", name: "Carnipapas", price: 110, type: "fries", customizable: true, food: true },
+  { id: "papas-especiales", category: "papas", name: "Papas especiales", displayName: "Especiales", price: 170, detail: "Carne, salchichas y queso gratinado", type: "fries", customizable: true, food: true },
   { id: "tocino-frito", category: "papas", name: "Tocino frito", price: 30, type: "standard", food: true },
 
   { id: "agua-fruta-litro", category: "bebidas", name: "Jamaica / Agua de fruta 1 L", price: 60, type: "drink", drink: true },
@@ -506,6 +509,71 @@ const customLinesByUnit = () =>
     });
   });
 
+const friesLineFromCard = (card) => {
+  const selected = (name) => Array.from(card.querySelectorAll(`input[data-fries="${name}"]:checked`)).map((input) => input.value);
+  const meat = selected("meat")[0];
+  const toppings = selected("topping");
+  const sauces = selected("sauce");
+  const ranch = selected("ranch").length > 0;
+  return {
+    productId: activeProduct.id,
+    name: activeProduct.name,
+    unitPrice: activeProduct.price + SAUCE_PRICE * (sauces.length + Number(ranch)),
+    customizations: [
+      ...(meat ? [`Carne: ${meat}`] : []),
+      ...(toppings.length ? [`Al gusto: ${toppings.join(", ")}`] : []),
+      ...sauces.map((sauce) => `Salsa de la casa: ${sauce} +${formatMoney(SAUCE_PRICE)}`),
+      ...(ranch ? [`Ranch +${formatMoney(SAUCE_PRICE)}`] : []),
+    ],
+    note: "", food: true, drink: false, promo: "",
+  };
+};
+
+const updateFriesPrice = () => {
+  const total = $$("[data-fries-card]").reduce((sum, card) => sum + friesLineFromCard(card).unitPrice, 0);
+  const base = activeProduct.price * $$("[data-fries-card]").length;
+  $("#fries-price").textContent = `Base: ${formatMoney(base)} · Extras: +${formatMoney(total - base)} · Total: ${formatMoney(total)}`;
+  $("#fries-save").textContent = `Guardar · ${formatMoney(total)}`;
+};
+
+const openFriesModal = (product) => {
+  activeProduct = product;
+  const quantity = Math.max(1, getProductCount(product.id));
+  const existing = state.cart.filter((line) => line.productId === product.id)
+    .flatMap((line) => Array.from({ length: line.quantity }, () => line));
+  const hasMeat = ["carnipapas", "papas-especiales"].includes(product.id);
+  $("#fries-title").textContent = product.name;
+  $("#fries-options").innerHTML = Array.from({ length: quantity }, (_, index) => {
+    const options = (values, kind, type = "checkbox") => values.map((value) => `
+      <label><input type="${type}" data-fries="${kind}" name="fries-${kind}-${index}" value="${value}" />
+      ${value}${kind === "sauce" ? ` +${formatMoney(SAUCE_PRICE)}` : ""}</label>`).join("");
+    return `<article data-fries-card class="unit-card">
+      ${quantity > 1 ? `<h3>Unidad ${index + 1}</h3>` : ""}
+      ${hasMeat ? `<div class="sheet-section"><p>Elige tu carne</p>
+        <div class="chip-grid">${options(["Sin preferencia", ...friesMeats], "meat", "radio")}</div>
+        <small>Sujeto a disponibilidad. Te confirmamos por WhatsApp.</small></div>` : ""}
+      <div class="sheet-section"><p>Agrégalas a tu gusto</p><small>Opcionales y sin costo. No se incluyen por defecto.</small>
+        <div class="chip-grid">${options(friesToppings, "topping")}</div></div>
+      <div class="sheet-section"><p>Salsas de la casa · +$20 por salsa</p>
+        <div class="chip-grid">${options(sauceOptions, "sauce")}</div></div>
+      <label class="all-in"><input type="checkbox" data-fries="ranch" value="Ranch" /> Ranch +$20</label>
+    </article>`;
+  }).join("");
+  $$("[data-fries-card]").forEach((card, index) => {
+    const details = existing[index]?.customizations || [];
+    card.querySelectorAll("[data-fries]").forEach((input) => {
+      const value = input.value;
+      input.checked = input.dataset.fries === "meat" ? details.includes(`Carne: ${value}`)
+        : input.dataset.fries === "topping" ? details.some((detail) => detail.startsWith("Al gusto: ") && detail.slice(10).split(", ").includes(value))
+        : input.dataset.fries === "sauce" ? details.includes(`Salsa de la casa: ${value} +${formatMoney(SAUCE_PRICE)}`)
+        : details.includes(`Ranch +${formatMoney(SAUCE_PRICE)}`);
+      if (value === "Sin preferencia") input.value = "";
+    });
+  });
+  updateFriesPrice();
+  openModal($("#fries-modal"));
+};
+
 const openBonelessModal = (product) => {
   activeProduct = product;
   $("#boneless-title").textContent = product.name;
@@ -618,13 +686,28 @@ const initEvents = () => {
     }
 
     if (action === "customize") {
-      if (product.type === "boneless") {
+      if (product.type === "fries") {
+        openFriesModal(product);
+      } else if (product.type === "boneless") {
         openBonelessModal(product);
       } else {
         openCustomModal(product);
       }
     }
   });
+
+  $("#fries-form").addEventListener("change", updateFriesPrice);
+  $("#fries-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const lines = $$("[data-fries-card]").map(friesLineFromCard);
+    removeProductLines(activeProduct.id);
+    lines.forEach((line) => addLine(line));
+    closeModal($("#fries-modal"));
+  });
+  $$("[data-close-fries]").forEach((node) => {
+    node.addEventListener("click", () => closeModal($("#fries-modal")));
+  });
+  $("#cart-location").href = $(".location-fab").href;
 
   $("#custom-form").addEventListener("submit", (event) => {
     event.preventDefault();

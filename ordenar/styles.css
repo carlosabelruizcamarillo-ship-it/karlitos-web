@@ -1469,3 +1469,58 @@ main {
 body:has(.modal:not([hidden])) .location-fab {
   display: none;
 }
+
+/* Personalización de papas y acciones independientes del carrito. */
+.cart-bar {
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 8px;
+  bottom: calc(8px + env(safe-area-inset-bottom));
+}
+#cart-location {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #b70610;
+  font-size: 22px;
+}
+#cart-location:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+.cart-bar strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.cart-bar button {
+  min-height: 44px;
+  padding-inline: 10px;
+  white-space: nowrap;
+}
+body:has(#cart-bar:not([hidden])) .location-fab {
+  display: none;
+}
+body:has(#cart-bar:not([hidden])) {
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+#fries-form .chip-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#fries-form label, #fries-form button {
+  min-height: 44px;
+}
+.fries-save-bar {
+  position: sticky;
+  bottom: -12px;
+  background: var(--panel);
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+#fries-price {
+  margin: 0 0 8px;
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 14px;
+}
