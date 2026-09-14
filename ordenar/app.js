@@ -276,17 +276,7 @@ const renderCounts = () => {
   });
 };
 
-const renderCheckout = () => {
-  const checkout = $("#checkout");
-  const items = $("#checkout-items");
-  const total = $("#checkout-total");
-  const upsell = $("#drink-upsell");
-  const hasItems = state.cart.length > 0;
-
-  checkout.hidden = !hasItems || state.view !== "checkout";
-  if (!hasItems) return;
-
-  items.innerHTML = state.cart
+const cartLinesMarkup = () => state.cart
     .map((line, index) => {
       const details = [
         ...(line.customizations || []),
@@ -303,6 +293,18 @@ const renderCheckout = () => {
       `;
     })
     .join("");
+
+const renderCheckout = () => {
+  const checkout = $("#checkout");
+  const items = $("#checkout-items");
+  const total = $("#checkout-total");
+  const upsell = $("#drink-upsell");
+  const hasItems = state.cart.length > 0;
+
+  checkout.hidden = !hasItems || state.view !== "checkout";
+  if (!hasItems) return;
+
+  items.innerHTML = cartLinesMarkup();
 
   total.textContent = formatMoney(cartTotal());
   upsell.hidden = !(hasFood() && !hasDrink() && !state.skippedUpsell);
@@ -841,6 +843,36 @@ const initEvents = () => {
     const button = event.target.closest("[data-cart-index]");
     if (!button) return;
     updateLineQuantity(Number(button.dataset.cartIndex), Number(button.dataset.cartDelta));
+  });
+
+  const cartPreview = $("#cart-preview-modal");
+  const closeCartPreview = () => {
+    closeModal(cartPreview);
+    $("#view-cart").focus();
+  };
+  $("#view-cart").addEventListener("click", () => {
+    $("#cart-preview-items").innerHTML = cartLinesMarkup();
+    $("#cart-preview-total").textContent = formatMoney(cartTotal());
+    openModal(cartPreview);
+    $("#keep-shopping").focus();
+  });
+  $$("[data-close-cart-preview]").forEach((node) => {
+    node.addEventListener("click", closeCartPreview);
+  });
+  cartPreview.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeCartPreview();
+    if (event.key === "Tab") {
+      const buttons = Array.from(cartPreview.querySelectorAll("button"));
+      const first = buttons[0];
+      const last = buttons[buttons.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   });
 
   $("#continue-order").addEventListener("click", () => {

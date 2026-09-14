@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex, follow" />
   <link rel="canonical" href="https://karlitoshotdogs.com/ordenar/" />
   <meta name="theme-color" content="#b70610" />
-  <link rel="stylesheet" href="./styles.css?v=extra-promo-20260914" />
+  <link rel="stylesheet" href="./styles.css?v=ver-carrito-20260914" />
 </head>
 <body>
   <img class="mascot-watermark" src="./assets/mascota-karlitos.png" alt="" aria-hidden="true" />
@@ -134,12 +134,27 @@
 
   <aside id="cart-bar" class="cart-bar" hidden>
     <a id="cart-location" target="_blank" rel="noopener noreferrer" aria-label="Cómo llegar a Karlitos Hot Dogs" title="Cómo llegar a Karlitos">📍</a>
-    <div>
-      <span>Tu pedido</span>
+    <button id="view-cart" type="button" aria-label="Ver productos seleccionados" aria-haspopup="dialog" aria-controls="cart-preview-modal">
       <strong id="cart-bar-summary">0 productos · $0</strong>
-    </div>
+    </button>
     <button id="continue-order" type="button">Continuar →</button>
   </aside>
+
+  <div id="cart-preview-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-close-cart-preview></div>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cart-preview-title">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <div class="sheet-head">
+        <h2 id="cart-preview-title">Productos seleccionados</h2>
+        <button type="button" class="icon-button" data-close-cart-preview aria-label="Cerrar resumen">×</button>
+      </div>
+      <div id="cart-preview-items" class="checkout-items"></div>
+      <div class="cart-preview-footer">
+        <div class="checkout-total"><span>Total estimado</span><strong id="cart-preview-total">$0</strong></div>
+        <button id="keep-shopping" class="primary-button" type="button" data-close-cart-preview>Seguir agregando</button>
+      </div>
+    </section>
+  </div>
 
   <div id="custom-modal" class="modal" hidden>
     <div class="modal-backdrop" data-close-modal></div>
@@ -275,6 +290,6 @@
   <a class="location-fab" href="https://www.google.com/maps/search/?api=1&query=Karlitos+Hotdogs%2C+Avenida+Laurel+entre+Cascalozuchil%2C+23436+San+Jos%C3%A9+del+Cabo%2C+B.C.S." target="_blank" rel="noopener noreferrer" aria-label="Cómo llegar a Karlitos Hot Dogs" title="Cómo llegar a Karlitos">
     <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
   </a>
-  <script src="./app.js?v=extra-simple-20260914"></script>
+  <script src="./app.js?v=ver-carrito-20260914"></script>
 </body>
 </html>
