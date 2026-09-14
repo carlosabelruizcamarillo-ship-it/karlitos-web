@@ -107,6 +107,7 @@ const state = {
 };
 
 let activeProduct = null;
+let cartEdit = null;
 
 const money = new Intl.NumberFormat("es-MX", {
   style: "currency",
@@ -134,7 +135,7 @@ const lineSignature = (line) =>
   });
 
 const removeProductLines = (productId) => {
-  state.cart = state.cart.filter((line) => line.productId !== productId);
+  state.cart = state.cart.filter((line) => cartEdit ? line !== cartEdit : line.productId !== productId);
 };
 
 const saveState = () => {
@@ -276,8 +277,10 @@ const renderCounts = () => {
   });
 };
 
-const cartLinesMarkup = () => state.cart
+const cartLinesMarkup = (editable = false) => state.cart
     .map((line, index) => {
+      const product = findProduct(line.productId);
+      const canCustomize = product && (product.customizable || ["con-todo", "boneless"].includes(product.type));
       const details = [
         ...(line.customizations || []),
         line.note ? `Nota: ${line.note}` : "",
@@ -289,6 +292,7 @@ const cartLinesMarkup = () => state.cart
             <strong>${line.name} ×${line.quantity} — ${formatMoney(line.unitPrice * line.quantity)}</strong>
             ${details.map((detail) => `<small>• ${detail}</small>`).join("")}
           </div>
+          ${editable && canCustomize ? `<button type="button" class="customize-button" data-edit-cart="${index}">Personalizar</button>` : ""}
         </article>
       `;
     })
@@ -388,10 +392,21 @@ const openModal = (modal) => {
 const closeModal = (modal) => {
   modal.hidden = true;
   document.body.style.overflow = "";
+  if (cartEdit && ["custom-modal", "fries-modal", "boneless-modal"].includes(modal.id)) {
+    cartEdit = null;
+    openCartPreview();
+  }
+};
+
+const openCartPreview = () => {
+  $("#cart-preview-items").innerHTML = cartLinesMarkup(true);
+  $("#cart-preview-total").textContent = formatMoney(cartTotal());
+  openModal($("#cart-preview-modal"));
+  $("#keep-shopping").focus();
 };
 
 const customizationCount = (product) =>
-  Math.max(1, getProductCount(product.id)) * (product.pieces || 1);
+  Math.max(1, cartEdit?.quantity || getProductCount(product.id)) * (product.pieces || 1);
 
 const pieceTitle = (index) => activeProduct.pieces
   ? `Promo ${Math.floor(index / activeProduct.pieces) + 1} · ${activeProduct.pieceLabel} ${index % activeProduct.pieces + 1}`
@@ -571,8 +586,8 @@ const updateFriesPrice = () => {
 
 const openFriesModal = (product) => {
   activeProduct = product;
-  const quantity = Math.max(1, getProductCount(product.id));
-  const existing = state.cart.filter((line) => line.productId === product.id)
+  const quantity = Math.max(1, cartEdit?.quantity || getProductCount(product.id));
+  const existing = (cartEdit ? [cartEdit] : state.cart.filter((line) => line.productId === product.id))
     .flatMap((line) => Array.from({ length: line.quantity }, () => line));
   const hasMeat = ["carnipapas", "papas-especiales"].includes(product.id);
   $("#fries-title").textContent = product.name;
@@ -757,7 +772,7 @@ const initEvents = () => {
 
   $("#custom-form").addEventListener("submit", (event) => {
     event.preventDefault();
-    const quantity = getProductCount(activeProduct.id);
+    const quantity = cartEdit?.quantity || getProductCount(activeProduct.id);
     const bulkMode = $('input[name="bulk-mode"]:checked')?.value || "same";
 
     if (activeProduct.pieces) {
@@ -817,7 +832,9 @@ const initEvents = () => {
     event.preventDefault();
     const line = bonelessLineFromForm();
     if (!line) return;
-    addLine(line);
+    const quantity = cartEdit?.quantity || 1;
+    if (cartEdit) removeProductLines(activeProduct.id);
+    addLine(line, quantity);
     closeModal($("#boneless-modal"));
   });
 
@@ -851,10 +868,56 @@ const initEvents = () => {
     $("#view-cart").focus();
   };
   $("#view-cart").addEventListener("click", () => {
-    $("#cart-preview-items").innerHTML = cartLinesMarkup();
-    $("#cart-preview-total").textContent = formatMoney(cartTotal());
-    openModal(cartPreview);
-    $("#keep-shopping").focus();
+    openCartPreview();
+  });
+  $("#cart-preview-items").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-edit-cart]");
+    if (!button) return;
+    const line = state.cart[Number(button.dataset.editCart)];
+    const product = findProduct(line?.productId);
+    if (!product) return;
+    closeModal(cartPreview);
+    cartEdit = line;
+    if (product.type === "fries") {
+      openFriesModal(product);
+    } else if (product.type === "boneless") {
+      openBonelessModal(product);
+      $$('input[name="protein"]').forEach((input) => {
+        input.checked = presentationNames[product.presentation][input.value] === line.name;
+      });
+      const sauces = line.customizations.find((detail) => detail.startsWith("Salsas: "))?.slice(8).split(" + ") || [];
+      $$('input[name="sauce"]').forEach((input) => { input.checked = sauces.includes(input.value); });
+      $("#sauce-count").textContent = `${sauces.length} / 2`;
+      const extra = line.customizations.find((detail) => detail.startsWith("Salsa extra: "))?.slice(13);
+      $("#extra-sauce-enabled").checked = Boolean(extra);
+      $("#extra-sauce-wrap").hidden = !extra;
+      $("#extra-sauce").value = extra || "";
+    } else {
+      openCustomModal(product);
+      const fillOptions = (details, note, unit) => {
+        const prefix = unit ? `unit-` : "";
+        const suffix = unit ? `-${unit}` : "";
+        const onion = details.find((detail) => detail.startsWith("Cebolla "))?.slice(8) || (details.includes("Sin cebolla") ? "sin cebolla" : "asada");
+        $$(`input[name="${prefix}onion${suffix}"]`).forEach((input) => { input.checked = input.value === onion; });
+        $$(`input[name="${unit ? `unit-remove-${unit}` : "remove-ingredient"}"]`).forEach((input) => { input.checked = details.includes(`Sin ${input.value}`); });
+        $$(`input[name="${unit ? `unit-free-${unit}` : "free-option"}"]`).forEach((input) => { input.checked = details.includes(`Con ${input.value}`); });
+        const noteInput = unit ? $(`textarea[name="unit-note-${unit}"]`) : $("#custom-note");
+        noteInput.value = note || "";
+      };
+      if (product.pieces && line.customizations.some((detail) => detail.startsWith(`${product.pieceLabel} 1:`))) {
+        $('input[name="bulk-mode"][value="split"]').checked = true;
+        updateBulkModeUI();
+        for (let unit = 1; unit <= customizationCount(product); unit += 1) {
+          const piece = (unit - 1) % product.pieces + 1;
+          const detail = line.customizations.find((value) => value.startsWith(`${product.pieceLabel} ${piece}: `)) || "";
+          const [options, note] = detail.slice(detail.indexOf(": ") + 2).split(" · Nota: ");
+          fillOptions(options.split(", "), note, unit);
+        }
+      } else {
+        fillOptions(line.customizations || [], line.note);
+        $("#with-everything").checked = !line.customizations?.some((detail) => detail.startsWith("Sin "));
+      }
+    }
   });
   $$("[data-close-cart-preview]").forEach((node) => {
     node.addEventListener("click", closeCartPreview);
