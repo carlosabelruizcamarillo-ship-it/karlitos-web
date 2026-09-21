@@ -1750,3 +1750,11 @@ body[data-delivery] .delivery-address-choice .name-field { padding: 0; border: 0
 body[data-delivery] .delivery-address-choice { gap: 8px; }
 body[data-delivery] .delivery-address-choice p { font-size: 13px; }
 body[data-delivery] #location-status:empty { display: none; }
+
+/* Keep delivery controls stationary when the cart changes. */
+body[data-delivery] { --order-header-height: 114px; }
+body[data-delivery] #resume-clear[hidden] { display: block !important; visibility: hidden; }
+body[data-delivery] #delivery-progress { min-height: 4.5em; line-height: 1.5; margin-block: 12px; }
+body[data-delivery] #delivery-progress[hidden] { display: block !important; visibility: hidden; }
+
+html:has(body[data-delivery]) { scroll-behavior: auto; }
