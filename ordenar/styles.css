@@ -1729,7 +1729,7 @@ body[data-delivery] .upsell-actions button {
 body[data-delivery] #cart-location { display: none; }
 
 /* Compact delivery entry and zone selection. */
-.delivery-access { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; max-width: 100%; text-align: center; }
+.primary-button.delivery-access { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; max-width: 100%; text-align: center; font-size: clamp(22px, 5.8vw, 32px); font-weight: 900; line-height: 1.2; padding: 20px 12px; min-height: 84px; border-block: 2px solid #8cf0a5; }
 .new-badge { background: var(--gold, #ffb735); color: #17110a; padding: 4px 8px; border-radius: 99px; font-size: .75em; }
 body[data-delivery] #delivery-coverage { width: 100%; max-width: 100%; min-width: 0; padding: 12px 6px; border-radius: 12px; background: var(--panel); color: var(--text); font-size: 16px; }
 body[data-delivery] .delivery-intro { margin: 0 auto; padding-block: 16px; position: relative; z-index: 1; background: #15120e; color: #fffaf2; border: 1px solid #504334; border-radius: 16px; }
