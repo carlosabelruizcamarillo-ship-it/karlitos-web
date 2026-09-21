@@ -1651,3 +1651,79 @@ body:has(#resume-clear:not([hidden])) {
 #cart-preview-modal button {
   min-height: 44px;
 }
+
+/* Delivery uses the same menu layout; these rules are scoped to its route. */
+body[data-delivery] .delivery-intro {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px 16px;
+  border-bottom: 1px solid var(--line);
+}
+body[data-delivery] .delivery-intro h2 { font-size: clamp(24px, 5vw, 34px); line-height: 1.15; }
+body[data-delivery] .delivery-intro .primary-button { display: inline-block; }
+body[data-delivery] #delivery-form { display: grid; gap: 16px; }
+body[data-delivery] #delivery-form p { margin: 0; color: var(--muted); }
+body[data-delivery] #delivery-form textarea,
+body[data-delivery] #delivery-form select {
+  width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--line);
+  border-radius: 12px; background: var(--panel); color: var(--text); font-size: 16px;
+}
+body[data-delivery] #delivery-form textarea { resize: vertical; }
+body[data-delivery] #send-whatsapp { width: 100%; border: 0; cursor: pointer; }
+body[data-delivery] #send-whatsapp:disabled { opacity: .5; cursor: not-allowed; }
+body[data-delivery] #delivery-minimum { color: var(--gold); font-weight: 700; }
+body[data-delivery] .location-fab { display: none; }
+
+/* Domicilio: size the content itself instead of clipping horizontal overflow. */
+body[data-delivery] {
+  overflow-x: visible;
+}
+body[data-delivery] .mascot-watermark {
+  width: min(500px, 100%);
+  max-width: 100%;
+}
+body[data-delivery] :is(main, .delivery-intro, .order-header, .category-nav,
+  .menu-root, .menu-section, .product-list, .product-row, .row-actions,
+  .checkout, .checkout-items, .cart-line, #delivery-form, .name-field,
+  .checkout-total, .upsell, .upsell-actions, .cart-bar, .sheet) {
+  min-width: 0;
+}
+body[data-delivery] :is(.menu-root, .product-list, .checkout,
+  .checkout-items, .cart-line, #delivery-form, .name-field, .upsell) {
+  grid-template-columns: minmax(0, 1fr);
+}
+body[data-delivery] :is(.product-title, .cart-line > div, .cart-bar > div,
+  .checkout-title, .name-field > *, .upsell-actions > *, .brand-lockup > *) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+body[data-delivery] :is(input, textarea, select, button) {
+  min-width: 0;
+  max-width: 100%;
+}
+body[data-delivery] :is(.checkout-total, .cart-bar) {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+body[data-delivery] .row-actions {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+body[data-delivery] :is(.product-price, .checkout-total strong) {
+  white-space: nowrap;
+}
+body[data-delivery] .category-nav a {
+  padding-inline: 6px;
+  overflow-wrap: anywhere;
+}
+body[data-delivery] :is(.delivery-intro .primary-button, #send-whatsapp) {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  text-align: center;
+}
+body[data-delivery] .upsell-actions button {
+  flex-wrap: wrap;
+}
+
+body[data-delivery] #cart-location { display: none; }

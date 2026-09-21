@@ -1,3 +1,8 @@
+const isDelivery = document.body.dataset.delivery === "true";
+const DELIVERY_MINIMUM = 100;
+const DELIVERY_FEE = 50;
+let deliveryLocation = "";
+let locationRequest = 0;
 const WHATSAPP_NUMBER = "526242112620";
 const STORAGE_KEY = "karlitos_order_v1";
 const STORAGE_TTL_MS = 6 * 60 * 60 * 1000;
@@ -86,7 +91,7 @@ const products = [
 
   { id: "agua-fruta-litro", category: "bebidas", name: "Jamaica / Agua de fruta 1 L", price: 60, type: "drink", drink: true },
   { id: "refresco", category: "bebidas", name: "Refresco", price: 40, type: "drink", drink: true },
-  { id: "agua-natural", category: "bebidas", name: "Agua natural", price: 30, type: "drink", drink: true },
+  { id: "agua-natural", category: "bebidas", name: "Agua Ciel litro", price: 30, type: "drink", drink: true },
 ];
 
 const presentationNames = {
@@ -97,7 +102,7 @@ const presentationNames = {
 
 const state = {
   cart: [],
-  mode: "Recoger",
+  mode: isDelivery ? "Domicilio" : "Recoger",
   customerName: "",
   source: new URLSearchParams(window.location.search).get("src") || "",
   skippedUpsell: false,
@@ -139,6 +144,7 @@ const removeProductLines = (productId) => {
 };
 
 const saveState = () => {
+  if (isDelivery) return;
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify({ ...state, timestamp: Date.now() })
@@ -146,6 +152,7 @@ const saveState = () => {
 };
 
 const readSavedState = () => {
+  if (isDelivery) return null;
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
     if (!parsed || !parsed.timestamp || Date.now() - parsed.timestamp > STORAGE_TTL_MS) {
@@ -277,6 +284,8 @@ const renderCounts = () => {
   });
 };
 
+const escapeText = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+
 const cartLinesMarkup = (editable = false) => state.cart
     .map((line, index) => {
       const product = findProduct(line.productId);
@@ -289,8 +298,8 @@ const cartLinesMarkup = (editable = false) => state.cart
       return `
         <article class="cart-line">
           <div>
-            <strong>${line.name} ×${line.quantity} — ${formatMoney(line.unitPrice * line.quantity)}</strong>
-            ${details.map((detail) => `<small>• ${detail}</small>`).join("")}
+            <strong>${escapeText(line.name)} ×${line.quantity} — ${formatMoney(line.unitPrice * line.quantity)}</strong>
+            ${details.map((detail) => `<small>• ${escapeText(detail)}</small>`).join("")}
           </div>
           ${editable && canCustomize ? `<button type="button" class="customize-button" data-edit-cart="${index}">Personalizar</button>` : ""}
         </article>
@@ -305,8 +314,8 @@ const renderCheckout = () => {
   const upsell = $("#drink-upsell");
   const hasItems = state.cart.length > 0;
 
-  checkout.hidden = !hasItems || state.view !== "checkout";
-  if (!hasItems) return;
+  checkout.hidden = (!isDelivery && !hasItems) || state.view !== "checkout";
+  if (!hasItems) { items.innerHTML = ""; upsell.hidden = true; total.textContent = formatMoney(0); return; }
 
   items.innerHTML = cartLinesMarkup();
 
@@ -324,6 +333,7 @@ const renderCartBar = () => {
 };
 
 const renderPaymentRules = () => {
+  if (isDelivery) return;
   const pickup = $("#pickup-payment");
   const onsite = $("#onsite-payment");
   const transfer = $("#transfer-ready");
@@ -368,6 +378,7 @@ const buildWhatsAppMessage = () => {
 };
 
 const updateWhatsapp = () => {
+  if (isDelivery) { renderDelivery(); return; }
   const link = $("#send-whatsapp");
   if (!state.cart.length) {
     link.href = `https://wa.me/${WHATSAPP_NUMBER}`;
@@ -942,14 +953,14 @@ const initEvents = () => {
     state.view = "checkout";
     saveState();
     render();
-    $("#checkout").scrollIntoView({ behavior: "smooth", block: "start" });
+    $("#checkout").scrollIntoView({ behavior: isDelivery ? "instant" : "smooth", block: "start" });
   });
 
   $("#modify-order").addEventListener("click", () => {
     state.view = "menu";
     saveState();
     render();
-    $("#menu-root").scrollIntoView({ behavior: "smooth", block: "start" });
+    $("#menu-root").scrollIntoView({ behavior: isDelivery ? "instant" : "smooth", block: "start" });
   });
 
   $("#customer-name").addEventListener("input", (event) => {
@@ -999,6 +1010,7 @@ const initEvents = () => {
   });
 
   $("#send-whatsapp").addEventListener("click", (event) => {
+    if (isDelivery) return;
     if (state.mode === "Recoger" && !state.transferReady) {
       event.preventDefault();
       $("#pickup-payment").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -1010,7 +1022,7 @@ const initEvents = () => {
   const startFresh = () => {
     state.cart = [];
     state.customerName = "";
-    state.mode = "Recoger";
+    state.mode = isDelivery ? "Domicilio" : "Recoger";
     state.skippedUpsell = false;
     state.view = "menu";
     state.transferReady = false;
@@ -1020,7 +1032,12 @@ const initEvents = () => {
     $('input[name="onsite-payment"][value="Caja"]').checked = true;
     $("#transfer-ready").checked = false;
     $("#resume-panel").hidden = true;
-    localStorage.removeItem(STORAGE_KEY);
+    if (!isDelivery) localStorage.removeItem(STORAGE_KEY);
+    if (isDelivery) {
+      $("#delivery-form").reset();
+      ["customer-name", "delivery-phone", "delivery-address"].forEach(id => document.getElementById(id).setCustomValidity(""));
+      clearDeliveryLocation();
+    }
     render();
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -1066,8 +1083,98 @@ const initCategoryTracking = () => {
   });
 };
 
+// Delivery shares the existing catalog and cart; personal data never enters storage.
+const deliveryValue = (id) => document.getElementById(id).value.trim();
+const renderDelivery = () => {
+  const subtotal = cartTotal();
+  const coverage = deliveryValue("delivery-coverage");
+  $("#delivery-subtotal").textContent = formatMoney(subtotal);
+  $("#checkout-total").textContent = formatMoney(subtotal + DELIVERY_FEE);
+  $("#delivery-minimum").textContent = subtotal < DELIVERY_MINIMUM
+    ? `Agrega ${formatMoney(DELIVERY_MINIMUM - subtotal)} más para solicitar servicio a domicilio.` : "";
+  $("#coverage-note").textContent = coverage === "outside"
+    ? "Solo entregamos en zona Aeropuerto. Puedes volver al inicio para hacer un pedido para recoger."
+    : coverage === "unsure"
+      ? "Indica tu dirección en la solicitud. La cobertura debe confirmarse por WhatsApp antes de aceptar la entrega; el envío de $50 aplica solo en zona Aeropuerto."
+      : "Karlitos verificará la cobertura antes de confirmar la entrega.";
+  $("#send-whatsapp").disabled = subtotal < DELIVERY_MINIMUM || coverage === "outside";
+};
+
+const buildDeliveryMessage = () => {
+  const lines = ["Nueva solicitud de pedido a domicilio", "",
+    `Nombre: ${deliveryValue("customer-name")}`,
+    `Teléfono: ${deliveryValue("delivery-phone")}`,
+    `Dirección: ${deliveryValue("delivery-address")}`];
+  if (deliveryLocation) lines.push(`Ubicación: ${deliveryLocation}`);
+  if (deliveryValue("delivery-reference")) lines.push(`Referencias: ${deliveryValue("delivery-reference")}`);
+  lines.push("", "Productos:");
+  state.cart.forEach((line) => {
+    lines.push(`${line.quantity}x ${line.name} · ${formatMoney(line.unitPrice)} c/u · Subtotal: ${formatMoney(line.quantity * line.unitPrice)}`);
+    (line.customizations || []).forEach((detail) => lines.push(`• ${detail}`));
+    if (line.note) lines.push(`Nota: ${line.note}`);
+  });
+  lines.push("", `Subtotal de productos: ${formatMoney(cartTotal())}`,
+    `Envío zona Aeropuerto: ${formatMoney(DELIVERY_FEE)}`,
+    `Total: ${formatMoney(cartTotal() + DELIVERY_FEE)}`);
+  if (deliveryValue("delivery-instructions")) lines.push(`Instrucciones adicionales: ${deliveryValue("delivery-instructions")}`);
+  lines.push("Cobertura: únicamente zona Aeropuerto.");
+  if (deliveryValue("delivery-coverage") === "unsure") lines.push("Tengo duda sobre mi cobertura. Confirmar zona y aplicabilidad del envío antes de aceptar la solicitud.");
+  lines.push("Solicitud pendiente de confirmación de disponibilidad y entrega por Karlitos.");
+  return lines.join("\n");
+};
+
+const clearDeliveryLocation = () => {
+  locationRequest += 1;
+  deliveryLocation = "";
+  $("#location-status").textContent = "";
+  $("#clear-location").hidden = true;
+  $("#use-location").disabled = false;
+};
+
+const initDelivery = () => {
+  if (!isDelivery) return;
+  $("#delivery-coverage").addEventListener("change", renderDelivery);
+  $("#clear-location").addEventListener("click", clearDeliveryLocation);
+  $("#use-location").addEventListener("click", () => {
+    clearDeliveryLocation();
+    const request = locationRequest;
+    const failed = () => {
+      if (request !== locationRequest) return;
+      $("#use-location").disabled = false;
+      $("#location-status").textContent = "No pudimos obtener tu ubicación. Escribe tu dirección; también puedes enviar tu ubicación directamente por WhatsApp.";
+    };
+    if (!navigator.geolocation || !window.isSecureContext) { failed(); return; }
+    $("#use-location").disabled = true;
+    $("#location-status").textContent = "Esperando permiso y ubicación…";
+    navigator.geolocation.getCurrentPosition(({ coords }) => {
+      if (request !== locationRequest) return;
+      if (!Number.isFinite(coords.latitude) || !Number.isFinite(coords.longitude)) { failed(); return; }
+      deliveryLocation = `https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}`;
+      $("#location-status").textContent = "Ubicación actual agregada a la solicitud. Comprueba que corresponde al lugar de entrega.";
+      $("#clear-location").hidden = false;
+      $("#use-location").disabled = false;
+    }, failed, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+  });
+  $("#delivery-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    renderDelivery();
+    if ($("#send-whatsapp").disabled) return;
+    const name = $("#customer-name");
+    const address = $("#delivery-address");
+    const phone = $("#delivery-phone");
+    name.setCustomValidity(name.value.trim() ? "" : "Escribe tu nombre.");
+    address.setCustomValidity(address.value.trim() ? "" : "Escribe tu dirección de entrega.");
+    const digits = phone.value.replace(/\D/g, "");
+    phone.setCustomValidity(digits.length >= 10 && digits.length <= 15 ? "" : "Escribe de 10 a 15 dígitos, incluyendo lada.");
+    if (!event.currentTarget.reportValidity()) return;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildDeliveryMessage())}`, "_blank", "noopener,noreferrer");
+  });
+  $("#delivery-form").addEventListener("input", (event) => event.target.setCustomValidity?.(""));
+};
+
 renderMenu();
 initEvents();
+initDelivery();
 initCategoryTracking();
 
 const saved = readSavedState();

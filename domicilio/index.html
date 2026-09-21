@@ -3,40 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ordenar | Karlitos Hot Dogs</title>
+  <title>Domicilio | Karlitos Hot Dogs</title>
   <meta name="description" content="Arma tu pedido de Karlitos Hot Dogs en pocos pasos y envialo por WhatsApp." />
   <meta name="robots" content="noindex, follow" />
-  <link rel="canonical" href="https://karlitoshotdogs.com/ordenar/" />
+  <link rel="canonical" href="https://karlitoshotdogs.com/domicilio/" />
   <meta name="theme-color" content="#b70610" />
-  <link rel="stylesheet" href="./styles.css?v=domicilio-production-20260920" />
+  <link rel="stylesheet" href="../ordenar/styles.css?v=domicilio-production-20260920" />
 </head>
-<body>
-  <img class="mascot-watermark" src="./assets/mascota-karlitos.png" alt="" aria-hidden="true" />
+<body data-delivery="true">
+  <img class="mascot-watermark" src="../ordenar/assets/mascota-karlitos.png" alt="" aria-hidden="true" />
   <header class="order-header">
     <div class="brand-lockup">
       <span class="brand-mark" aria-hidden="true">
         <img src="../img/logo-hero-karlitos.png" alt="" />
       </span>
-      <h1>¿Qué se te antoja?</h1>
+      <h1>Pedido a domicilio</h1>
     </div>
     <button id="resume-clear" class="ghost-button" type="button" hidden>Empezar de nuevo</button>
   </header>
 
-  <a class="primary-button" href="../domicilio/">Servicio a domicilio · Zona Aeropuerto</a>
+  <section class="delivery-intro">
+    <a href="../">← Inicio</a>
+    <h2>Ayúdanos a encontrar tu domicilio</h2>
+    <p>Servicio a domicilio disponible únicamente en zona Aeropuerto. Arma tu pedido y comparte los datos necesarios para encontrarte.</p>
+    <p><strong>Mínimo $100 en productos · Envío $50 · Total mínimo $150</strong></p>
+    <a class="primary-button" href="#menu-root">Ver menú y armar pedido</a>
+  </section>
 
-  <details class="order-guide">
-    <summary>
-      <strong>¿Cómo ordenar?</strong>
-      <span>1. Elige → 2. Personaliza → 3. Revisa → 4. Envía por WhatsApp</span>
-    </summary>
-    <ol>
-      <li>Agrega lo que quieras.</li>
-      <li>Personalízalo a tu gusto.</li>
-      <li>Revisa tu pedido.</li>
-      <li>Elige si vas a recoger o estás en Karlitos.</li>
-      <li>Envía tu pedido por WhatsApp.</li>
-    </ol>
-  </details>
+  <a class="location-fab" href="https://www.google.com/maps/search/?api=1&query=Karlitos+Hotdogs%2C+Avenida+Laurel+entre+Cascalozuchil%2C+23436+San+Jos%C3%A9+del+Cabo%2C+B.C.S." target="_blank" rel="noopener noreferrer" aria-label="Cómo llegar a Karlitos Hot Dogs" title="Cómo llegar a Karlitos">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span>Ubicación</span>
+  </a>
 
   <nav class="category-nav" aria-label="Categorias del menu">
     <a href="#promos" data-nav-section="promos">🔥 Promos</a>
@@ -66,8 +63,8 @@
     <section id="checkout" class="checkout" hidden>
       <div class="section-head checkout-title">
         <p>Tu pedido</p>
-        <h2>Revisa y manda por WhatsApp</h2>
-        <span>Revisa tu pedido antes de continuar. Karlitos preparará tus productos con las indicaciones mostradas aquí.</span>
+        <h2>Revisa tu solicitud</h2>
+        <span>Revisa tu pedido antes de continuar. Karlitos confirmará disponibilidad y entrega por WhatsApp.</span>
       </div>
 
       <div id="checkout-items" class="checkout-items"></div>
@@ -84,7 +81,7 @@
         </div>
       </div>
 
-      <fieldset class="mode-field">
+      <fieldset class="mode-field" hidden>
         <legend>Modalidad</legend>
         <label>
           <input type="radio" name="order-mode" value="Recoger" checked />
@@ -100,7 +97,7 @@
         </label>
       </fieldset>
 
-      <section id="payment-rules" class="payment-rules">
+      <section id="payment-rules" class="payment-rules" hidden>
         <div id="pickup-payment" class="payment-box">
           <strong>Recoger: transferencia antes de preparar</strong>
           <p>Realiza tu transferencia con los datos oficiales de Karlitos y envía tu pedido junto con el comprobante por WhatsApp. Tu pedido comenzará a prepararse cuando Karlitos confirme el pago.</p>
@@ -120,17 +117,28 @@
         </div>
       </section>
 
-      <label class="name-field">
-        <span>Nombre opcional</span>
-        <input id="customer-name" type="text" autocomplete="name" placeholder="Ej. Carlos" />
-      </label>
-
-      <div class="checkout-total">
-        <span>Total estimado</span>
-        <strong id="checkout-total">$0</strong>
-      </div>
-
-      <a id="send-whatsapp" class="whatsapp-button is-disabled" href="https://wa.me/526242112620" target="_blank" rel="noreferrer" aria-disabled="true">Enviar pedido por WhatsApp</a>
+      <form id="delivery-form" autocomplete="off">
+        <label class="name-field"><span>Nombre *</span><input id="customer-name" required maxlength="80" /></label>
+        <label class="name-field"><span>Teléfono de contacto *</span><input id="delivery-phone" type="tel" inputmode="tel" required pattern="[0-9+\s\(\)\-]{10,20}" maxlength="20" title="Escribe tu teléfono con lada, de 10 a 15 dígitos." /></label>
+        <label class="name-field"><span>Dirección de entrega *</span><textarea id="delivery-address" required maxlength="300" rows="3" placeholder="Calle, número y colonia"></textarea></label>
+        <label class="name-field"><span>Cobertura *</span><select id="delivery-coverage" required>
+          <option value="">Selecciona tu zona</option><option value="airport">Estoy en zona Aeropuerto</option><option value="unsure">No sé si estoy dentro de la zona</option><option value="outside">Estoy fuera de zona Aeropuerto</option>
+        </select></label>
+        <p id="coverage-note" role="status">Karlitos verificará la cobertura antes de confirmar la entrega.</p>
+        <button id="use-location" class="secondary-button" type="button">Usar mi ubicación actual</button>
+        <p>Úsala solamente si estás en el lugar donde recibirás el pedido.</p>
+        <p id="location-status" role="status"></p>
+        <button id="clear-location" class="ghost-button" type="button" hidden>Quitar ubicación</button>
+        <label class="name-field"><span>Referencias (opcional)</span><textarea id="delivery-reference" rows="2" maxlength="200"></textarea></label>
+        <label class="name-field"><span>Instrucciones adicionales (opcional)</span><textarea id="delivery-instructions" rows="2" maxlength="200"></textarea></label>
+        <div class="checkout-total"><span>Subtotal de productos</span><strong id="delivery-subtotal">$0</strong></div>
+        <div class="checkout-total"><span>Envío zona Aeropuerto</span><strong>$50</strong></div>
+        <div class="checkout-total"><span>Total</span><strong id="checkout-total">$0</strong></div>
+        <p id="delivery-minimum" role="status"></p>
+        <p>Al continuar se abrirá WhatsApp con tu solicitud. Tu pedido y la entrega quedarán confirmados cuando Karlitos te responda.</p>
+        <button id="send-whatsapp" class="whatsapp-button" type="submit" disabled>Continuar en WhatsApp</button>
+        <p>Tú envías el mensaje en WhatsApp. Los datos de entrega solo se mantienen mientras esta página está abierta.</p>
+      </form>
     </section>
   </main>
 
@@ -289,9 +297,6 @@
     </form>
   </div>
 
-  <a class="location-fab" href="https://www.google.com/maps/search/?api=1&query=Karlitos+Hotdogs%2C+Avenida+Laurel+entre+Cascalozuchil%2C+23436+San+Jos%C3%A9+del+Cabo%2C+B.C.S." target="_blank" rel="noopener noreferrer" aria-label="Cómo llegar a Karlitos Hot Dogs" title="Cómo llegar a Karlitos">
-    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-  </a>
-  <script src="./app.js?v=editar-carrito-20260914"></script>
+  <script src="../ordenar/app.js?v=domicilio-production-20260920"></script>
 </body>
 </html>
