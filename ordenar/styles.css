@@ -1727,3 +1727,24 @@ body[data-delivery] .upsell-actions button {
 }
 
 body[data-delivery] #cart-location { display: none; }
+
+/* Compact delivery entry and zone selection. */
+.delivery-access { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; max-width: 100%; text-align: center; }
+.new-badge { background: var(--gold, #ffb735); color: #17110a; padding: 4px 8px; border-radius: 99px; font-size: .75em; }
+body[data-delivery] #delivery-coverage { width: 100%; max-width: 100%; min-width: 0; padding: 12px 6px; border-radius: 12px; background: var(--panel); color: var(--text); font-size: 16px; }
+body[data-delivery] .delivery-intro { margin: 0 auto; padding-block: 16px; }
+body[data-delivery] .delivery-intro h2 { margin-block: 12px; }
+body[data-delivery] #delivery-progress { color: var(--gold); }
+body[data-delivery] #continue-order:disabled { opacity: .5; }
+body[data-delivery] [hidden] { display: none !important; }
+body[data-delivery] .checkout-total strong { white-space: normal; text-align: right; }
+
+body[data-delivery] .delivery-address-choice { display: grid; gap: 12px; min-width: 0; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 12px; }
+body[data-delivery] .delivery-address-choice legend { color: var(--gold); font-weight: 800; }
+
+body[data-delivery] .address-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+body[data-delivery] .address-actions button { padding: 8px; min-height: 44px; font-size: 14px; line-height: 1.2; white-space: normal; }
+body[data-delivery] .delivery-address-choice .name-field { padding: 0; border: 0; background: transparent; }
+body[data-delivery] .delivery-address-choice { gap: 8px; }
+body[data-delivery] .delivery-address-choice p { font-size: 13px; }
+body[data-delivery] #location-status:empty { display: none; }

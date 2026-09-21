@@ -1,6 +1,8 @@
 const isDelivery = document.body.dataset.delivery === "true";
-const DELIVERY_MINIMUM = 100;
-const DELIVERY_FEE = 50;
+const DELIVERY_ZONES = {
+  zone1: { name: "Zona 1 · Santa Anita → San José Viejo", minimum: 100, fee: 50 },
+  zone2: { name: "Zona 2 · Zacatal → Santa Rosa", minimum: 300, fee: 100 },
+};
 let deliveryLocation = "";
 let locationRequest = 0;
 const WHATSAPP_NUMBER = "526242112620";
@@ -950,6 +952,7 @@ const initEvents = () => {
   });
 
   $("#continue-order").addEventListener("click", () => {
+    if (isDelivery && $("#continue-order").disabled) return;
     state.view = "checkout";
     saveState();
     render();
@@ -1035,6 +1038,7 @@ const initEvents = () => {
     if (!isDelivery) localStorage.removeItem(STORAGE_KEY);
     if (isDelivery) {
       $("#delivery-form").reset();
+      $("#delivery-coverage").value = "";
       ["customer-name", "delivery-phone", "delivery-address"].forEach(id => document.getElementById(id).setCustomValidity(""));
       clearDeliveryLocation();
     }
@@ -1088,23 +1092,36 @@ const deliveryValue = (id) => document.getElementById(id).value.trim();
 const renderDelivery = () => {
   const subtotal = cartTotal();
   const coverage = deliveryValue("delivery-coverage");
+  const zone = DELIVERY_ZONES[coverage];
+  const selected = Boolean(zone) || coverage === "unsure";
+  const shortage = zone ? Math.max(0, zone.minimum - subtotal) : 0;
+  const minimumMessage = shortage ? `Agrega ${formatMoney(shortage)} más para solicitar servicio a domicilio en esta zona.` : "";
+  $("#consult-coverage").hidden = coverage !== "unsure";
+  $("#menu-root").hidden = !selected;
+  $(".category-nav").hidden = !selected;
   $("#delivery-subtotal").textContent = formatMoney(subtotal);
-  $("#checkout-total").textContent = formatMoney(subtotal + DELIVERY_FEE);
-  $("#delivery-minimum").textContent = subtotal < DELIVERY_MINIMUM
-    ? `Agrega ${formatMoney(DELIVERY_MINIMUM - subtotal)} más para solicitar servicio a domicilio.` : "";
-  $("#coverage-note").textContent = coverage === "outside"
-    ? "Solo entregamos en zona Aeropuerto. Puedes volver al inicio para hacer un pedido para recoger."
-    : coverage === "unsure"
-      ? "Indica tu dirección en la solicitud. La cobertura debe confirmarse por WhatsApp antes de aceptar la entrega; el envío de $50 aplica solo en zona Aeropuerto."
-      : "Karlitos verificará la cobertura antes de confirmar la entrega.";
-  $("#send-whatsapp").disabled = subtotal < DELIVERY_MINIMUM || coverage === "outside";
+  $("#delivery-fee-label").textContent = zone ? `Envío ${coverage === "zone1" ? "Zona 1" : "Zona 2"}` : "Envío";
+  $("#delivery-fee").textContent = zone ? formatMoney(zone.fee) : "Envío por confirmar";
+  $("#checkout-total").textContent = zone ? formatMoney(subtotal + zone.fee) : "Total pendiente";
+  $("#coverage-note").textContent = zone
+    ? `Mínimo ${formatMoney(zone.minimum)} · Envío ${formatMoney(zone.fee)}`
+    : coverage === "unsure" ? "Envío por confirmar · Total pendiente. Consulta cobertura por WhatsApp." : "";
+  $("#delivery-minimum").textContent = minimumMessage;
+  $("#delivery-order-guide").hidden = !selected;
+  $("#delivery-progress").textContent = subtotal > 0 ? minimumMessage : "";
+  $("#delivery-progress").hidden = subtotal === 0 || !minimumMessage;
+  $("#send-whatsapp").disabled = !selected || shortage > 0;
+  $("#continue-order").disabled = !selected || shortage > 0;
+  $("#checkout").hidden = !selected || state.view !== "checkout";
 };
 
 const buildDeliveryMessage = () => {
+  const zone = DELIVERY_ZONES[deliveryValue("delivery-coverage")];
   const lines = ["Nueva solicitud de pedido a domicilio", "",
+    `Zona: ${zone ? zone.name : "Cobertura por confirmar"}`,
     `Nombre: ${deliveryValue("customer-name")}`,
-    `Teléfono: ${deliveryValue("delivery-phone")}`,
-    `Dirección: ${deliveryValue("delivery-address")}`];
+    `Teléfono: ${deliveryValue("delivery-phone")}`];
+  if (deliveryValue("delivery-address")) lines.push(`Dirección: ${deliveryValue("delivery-address")}`);
   if (deliveryLocation) lines.push(`Ubicación: ${deliveryLocation}`);
   if (deliveryValue("delivery-reference")) lines.push(`Referencias: ${deliveryValue("delivery-reference")}`);
   lines.push("", "Productos:");
@@ -1114,18 +1131,27 @@ const buildDeliveryMessage = () => {
     if (line.note) lines.push(`Nota: ${line.note}`);
   });
   lines.push("", `Subtotal de productos: ${formatMoney(cartTotal())}`,
-    `Envío zona Aeropuerto: ${formatMoney(DELIVERY_FEE)}`,
-    `Total: ${formatMoney(cartTotal() + DELIVERY_FEE)}`);
-  if (deliveryValue("delivery-instructions")) lines.push(`Instrucciones adicionales: ${deliveryValue("delivery-instructions")}`);
-  lines.push("Cobertura: únicamente zona Aeropuerto.");
-  if (deliveryValue("delivery-coverage") === "unsure") lines.push("Tengo duda sobre mi cobertura. Confirmar zona y aplicabilidad del envío antes de aceptar la solicitud.");
-  lines.push("Solicitud pendiente de confirmación de disponibilidad y entrega por Karlitos.");
+    zone ? `Envío: ${formatMoney(zone.fee)}` : "Envío por confirmar",
+    zone ? `Total: ${formatMoney(cartTotal() + zone.fee)}` : "Total pendiente");
+  lines.push("Pedido y entrega pendientes de confirmación por Karlitos.");
   return lines.join("\n");
+};
+
+const syncDeliveryAddress = () => {
+  const located = Boolean(deliveryLocation);
+  $("#written-address-field").hidden = located;
+  $("#delivery-address").required = !located;
+  $("#delivery-address").disabled = located;
+  $("#delivery-address").setCustomValidity("");
+  $("#delivery-reference").required = false;
+  $("#delivery-reference").setCustomValidity("");
+  $("#delivery-reference-label").textContent = "Referencias (opcional)";
 };
 
 const clearDeliveryLocation = () => {
   locationRequest += 1;
   deliveryLocation = "";
+  syncDeliveryAddress();
   $("#location-status").textContent = "";
   $("#clear-location").hidden = true;
   $("#use-location").disabled = false;
@@ -1134,14 +1160,20 @@ const clearDeliveryLocation = () => {
 const initDelivery = () => {
   if (!isDelivery) return;
   $("#delivery-coverage").addEventListener("change", renderDelivery);
+  $("#consult-coverage").addEventListener("click", () => {
+    state.view = "checkout";
+    render();
+    $("#checkout").scrollIntoView({ behavior: "instant", block: "start" });
+  });
   $("#clear-location").addEventListener("click", clearDeliveryLocation);
+  $("#write-address").addEventListener("click", clearDeliveryLocation);
   $("#use-location").addEventListener("click", () => {
     clearDeliveryLocation();
     const request = locationRequest;
     const failed = () => {
       if (request !== locationRequest) return;
       $("#use-location").disabled = false;
-      $("#location-status").textContent = "No pudimos obtener tu ubicación. Escribe tu dirección; también puedes enviar tu ubicación directamente por WhatsApp.";
+      $("#location-status").textContent = "No pudimos obtener tu ubicación. Puedes escribir tu dirección.";
     };
     if (!navigator.geolocation || !window.isSecureContext) { failed(); return; }
     $("#use-location").disabled = true;
@@ -1150,6 +1182,7 @@ const initDelivery = () => {
       if (request !== locationRequest) return;
       if (!Number.isFinite(coords.latitude) || !Number.isFinite(coords.longitude)) { failed(); return; }
       deliveryLocation = `https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}`;
+      syncDeliveryAddress();
       $("#location-status").textContent = "Ubicación actual agregada a la solicitud. Comprueba que corresponde al lugar de entrega.";
       $("#clear-location").hidden = false;
       $("#use-location").disabled = false;
@@ -1163,7 +1196,7 @@ const initDelivery = () => {
     const address = $("#delivery-address");
     const phone = $("#delivery-phone");
     name.setCustomValidity(name.value.trim() ? "" : "Escribe tu nombre.");
-    address.setCustomValidity(address.value.trim() ? "" : "Escribe tu dirección de entrega.");
+    address.setCustomValidity(deliveryLocation || address.value.trim() ? "" : "Escribe tu dirección de entrega.");
     const digits = phone.value.replace(/\D/g, "");
     phone.setCustomValidity(digits.length >= 10 && digits.length <= 15 ? "" : "Escribe de 10 a 15 dígitos, incluyendo lada.");
     if (!event.currentTarget.reportValidity()) return;
