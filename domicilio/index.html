@@ -24,14 +24,22 @@
 
   <section class="delivery-intro">
     <a href="../ordenar/">← Inicio</a>
-    <h2>¿Dónde entregamos?</h2>
-    <p>Cada tramo incluye las colonias intermedias.</p>
-    <label for="delivery-coverage">Elige tu zona</label>
+    <h2>Selecciona tu colonia</h2>
+    <label for="delivery-coverage" class="colony-label">Colonia de entrega</label>
     <select id="delivery-coverage" required>
-      <option value="">Selecciona tu zona</option>
-      <option value="zone1">Zona 1 · Santa Anita → San José Viejo</option>
-      <option value="zone2">Zona 2 · Zacatal → Santa Rosa</option>
-      <option value="unsure">No encuentro mi zona</option>
+      <option value="">Selecciona tu colonia</option>
+      <option value="Santa Anita">Santa Anita</option>
+      <option value="Las Veredas">Las Veredas</option>
+      <option value="Viva Veredas">Viva Veredas</option>
+      <option value="Buenos Aires">Buenos Aires</option>
+      <option value="San Bernabé">San Bernabé</option>
+      <option value="San José Viejo">San José Viejo</option>
+      <option value="Costa Dorada">Costa Dorada</option>
+      <option value="Villa Bonita">Villa Bonita</option>
+      <option value="San Carlos">San Carlos</option>
+      <option value="Zacatal">Zacatal</option>
+      <option value="Santa Rosa">Santa Rosa</option>
+      <option value="unsure">No encuentro mi colonia</option>
     </select>
     <p id="coverage-note" role="status"></p>
     <div id="delivery-order-guide" hidden>
@@ -143,7 +151,7 @@
           <p id="location-status" role="status"></p>
           <button id="clear-location" class="ghost-button" type="button" hidden>Quitar ubicación</button>
           <label id="written-address-field" class="name-field"><span>Calle, número y colonia *</span><textarea id="delivery-address" required maxlength="300" rows="2" placeholder="Calle, número y colonia"></textarea></label>
-          <label class="name-field"><span id="delivery-reference-label">Referencias (opcional)</span><textarea id="delivery-reference" placeholder="Ej. casa azul, frente al Oxxo, portón negro" rows="1" maxlength="200"></textarea></label>
+          <label class="name-field"><span id="delivery-reference-label">Referencias (opcional)</span><textarea id="delivery-reference" placeholder="Ej. casa amarilla, frente al Oxxo, portón negro" rows="1" maxlength="200"></textarea></label>
         </fieldset>
         <div class="checkout-total"><span>Subtotal de productos</span><strong id="delivery-subtotal">$0</strong></div>
         <div class="checkout-total"><span id="delivery-fee-label">Envío</span><strong id="delivery-fee">Por confirmar</strong></div>
@@ -311,6 +319,6 @@
     </form>
   </div>
 
-  <script src="../ordenar/app.js?v=domicilio-direccion-v3"></script>
+  <script src="../ordenar/app.js?v=domicilio-colonias-v5"></script>
 </body>
 </html>

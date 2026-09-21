@@ -1,8 +1,9 @@
 const isDelivery = document.body.dataset.delivery === "true";
 const DELIVERY_ZONES = {
-  zone1: { name: "Zona 1 · Santa Anita → San José Viejo", minimum: 100, fee: 50 },
-  zone2: { name: "Zona 2 · Zacatal → Santa Rosa", minimum: 300, fee: 100 },
+  zone1: { minimum: 100, fee: 50 },
+  zone2: { minimum: 300, fee: 100 },
 };
+const DELIVERY_COLONIES = {"Santa Anita": "zone1", "Las Veredas": "zone1", "Viva Veredas": "zone1", "Buenos Aires": "zone1", "San Bernabé": "zone1", "San José Viejo": "zone1", "Costa Dorada": "zone1", "Villa Bonita": "zone1", "San Carlos": "zone1", "Zacatal": "zone2", "Santa Rosa": "zone2"};
 let deliveryLocation = "";
 let locationRequest = 0;
 const WHATSAPP_NUMBER = "526242112620";
@@ -1092,15 +1093,15 @@ const deliveryValue = (id) => document.getElementById(id).value.trim();
 const renderDelivery = () => {
   const subtotal = cartTotal();
   const coverage = deliveryValue("delivery-coverage");
-  const zone = DELIVERY_ZONES[coverage];
+  const zone = DELIVERY_ZONES[DELIVERY_COLONIES[coverage]];
   const selected = Boolean(zone) || coverage === "unsure";
   const shortage = zone ? Math.max(0, zone.minimum - subtotal) : 0;
-  const minimumMessage = shortage ? `Agrega ${formatMoney(shortage)} más para solicitar servicio a domicilio en esta zona.` : "";
+  const minimumMessage = shortage ? `Agrega ${formatMoney(shortage)} más para solicitar servicio a domicilio en tu colonia.` : "";
   $("#consult-coverage").hidden = coverage !== "unsure";
   $("#menu-root").hidden = !selected;
   $(".category-nav").hidden = !selected;
   $("#delivery-subtotal").textContent = formatMoney(subtotal);
-  $("#delivery-fee-label").textContent = zone ? `Envío ${coverage === "zone1" ? "Zona 1" : "Zona 2"}` : "Envío";
+  $("#delivery-fee-label").textContent = "Envío";
   $("#delivery-fee").textContent = zone ? formatMoney(zone.fee) : "Envío por confirmar";
   $("#checkout-total").textContent = zone ? formatMoney(subtotal + zone.fee) : "Total pendiente";
   $("#coverage-note").textContent = zone
@@ -1116,9 +1117,9 @@ const renderDelivery = () => {
 };
 
 const buildDeliveryMessage = () => {
-  const zone = DELIVERY_ZONES[deliveryValue("delivery-coverage")];
+  const zone = DELIVERY_ZONES[DELIVERY_COLONIES[deliveryValue("delivery-coverage")]];
   const lines = ["Nueva solicitud de pedido a domicilio", "",
-    `Zona: ${zone ? zone.name : "Cobertura por confirmar"}`,
+    `Colonia: ${zone ? deliveryValue("delivery-coverage") : "cobertura por confirmar"}`,
     `Nombre: ${deliveryValue("customer-name")}`,
     `Teléfono: ${deliveryValue("delivery-phone")}`];
   if (deliveryValue("delivery-address")) lines.push(`Dirección: ${deliveryValue("delivery-address")}`);
@@ -1131,8 +1132,8 @@ const buildDeliveryMessage = () => {
     if (line.note) lines.push(`Nota: ${line.note}`);
   });
   lines.push("", `Subtotal de productos: ${formatMoney(cartTotal())}`,
-    zone ? `Envío: ${formatMoney(zone.fee)}` : "Envío por confirmar",
-    zone ? `Total: ${formatMoney(cartTotal() + zone.fee)}` : "Total pendiente");
+    zone ? `Envío: ${formatMoney(zone.fee)}` : "Envío: por confirmar",
+    zone ? `Total: ${formatMoney(cartTotal() + zone.fee)}` : "Total: pendiente");
   lines.push("Pedido y entrega pendientes de confirmación por Karlitos.");
   return lines.join("\n");
 };
