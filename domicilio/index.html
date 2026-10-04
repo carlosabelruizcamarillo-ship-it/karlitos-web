@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex, follow" />
   <link rel="canonical" href="https://karlitoshotdogs.com/domicilio/" />
   <meta name="theme-color" content="#b70610" />
-  <link rel="stylesheet" href="../ordenar/styles.css?v=domicilio-estable-v8" />
+  <link rel="stylesheet" href="../ordenar/styles.css?v=pagos-opciones-20261003" />
 </head>
 <body data-delivery="true">
   <img class="mascot-watermark" src="../ordenar/assets/mascota-karlitos.png" alt="" aria-hidden="true" />
@@ -58,7 +58,7 @@
   <nav class="category-nav" aria-label="Categorias del menu">
     <a href="#promos" data-nav-section="promos">🔥 Promos</a>
     <a href="#hot-dogs" data-nav-section="hot-dogs">🌭 Hot Dogs</a>
-    <a href="#hamburguesas" data-nav-section="hamburguesas">🍔 Burgers</a>
+    <a href="#hamburguesas" data-nav-section="hamburguesas">🍔 Hamburguesas</a>
     <a href="#boneless-alitas" data-nav-section="boneless-alitas">🍗 Boneless</a>
     <a href="#burros" data-nav-section="burros">🌯 Burros</a>
     <a href="#tortitas" data-nav-section="tortitas">🥪 Tortitas</a>
@@ -101,39 +101,19 @@
         </div>
       </div>
 
-      <fieldset class="mode-field" hidden>
-        <legend>Modalidad</legend>
-        <label>
-          <input type="radio" name="order-mode" value="Recoger" checked />
-          <span>Voy a recoger</span>
-        </label>
-        <label>
-          <input type="radio" name="order-mode" value="Estoy en Karlitos" />
-          <span>Estoy en Karlitos</span>
-        </label>
-        <label class="disabled-option">
-          <input type="radio" name="order-mode" value="Domicilio" disabled />
-          <span>Domicilio pendiente</span>
-        </label>
-      </fieldset>
 
-      <section id="payment-rules" class="payment-rules" hidden>
-        <div id="pickup-payment" class="payment-box">
-          <strong>Recoger: transferencia antes de preparar</strong>
-          <p>Realiza tu transferencia con los datos oficiales de Karlitos y envía tu pedido junto con el comprobante por WhatsApp. Tu pedido comenzará a prepararse cuando Karlitos confirme el pago.</p>
-          <label class="confirm-transfer">
-            <input id="transfer-ready" type="checkbox" />
-            <span>Ya hice mi transferencia</span>
-          </label>
-        </div>
 
-        <div id="onsite-payment" class="payment-box" hidden>
-          <strong>En Karlitos</strong>
-          <p>Puedes pagar en caja o por transferencia. El equipo confirmará recepción antes de cerrar el pedido.</p>
-          <div class="inline-options" role="radiogroup" aria-label="Forma de pago en Karlitos">
-            <label><input type="radio" name="onsite-payment" value="Caja" checked /> Caja</label>
-            <label><input type="radio" name="onsite-payment" value="Transferencia" /> Transferencia</label>
-          </div>
+      <section id="payment-rules" class="payment-rules" aria-label="Forma de pago">
+        <fieldset class="mode-field">
+          <legend>Forma de pago</legend>
+          <label><input type="radio" name="payment-method" value="cash" checked /> Efectivo al repartidor</label>
+          <label><input type="radio" name="payment-method" value="transfer" /> Transferencia</label>
+        </fieldset>
+        <p id="payment-description"></p>
+        <div id="transfer-payment" class="payment-box" hidden>
+          <strong>Pago por transferencia</strong>
+          <p>Solicita los datos actualizados de Karlitos y envía tu comprobante por WhatsApp. El pago queda pendiente hasta que Karlitos confirme que lo recibió.</p>
+          <a class="secondary-button" href="https://wa.me/526242112620?text=Hola%2C%20quiero%20pagar%20por%20transferencia.%20%C2%BFMe%20comparten%20banco%2C%20titular%20y%20CLABE%20actualizados%3F" target="_blank" rel="noopener noreferrer">Solicitar datos de transferencia</a>
         </div>
       </section>
 
@@ -319,6 +299,6 @@
     </form>
   </div>
 
-  <script src="../ordenar/app.js?v=domicilio-colonias-v5"></script>
+  <script src="../ordenar/app.js?v=pagos-opciones-20261003"></script>
 </body>
 </html>

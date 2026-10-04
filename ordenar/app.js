@@ -48,7 +48,7 @@ const categories = [
 const categoryLabels = {
   promos: "🔥 Promos",
   "hot-dogs": "🌭 Hot Dogs",
-  hamburguesas: "🍔 Burgers",
+  hamburguesas: "🍔 Hamburguesas",
   "boneless-alitas": "🍗 Boneless",
   burros: "🌯 Burros",
   tortitas: "🥪 Tortitas",
@@ -110,8 +110,7 @@ const state = {
   source: new URLSearchParams(window.location.search).get("src") || "",
   skippedUpsell: false,
   view: "menu",
-  transferReady: false,
-  onsitePayment: "Caja",
+  paymentMethod: "cash",
 };
 
 let activeProduct = null;
@@ -335,19 +334,37 @@ const renderCartBar = () => {
   summary.textContent = `${count} ${count === 1 ? "producto" : "productos"} · ${formatMoney(cartTotal())}`;
 };
 
-const renderPaymentRules = () => {
-  if (isDelivery) return;
-  const pickup = $("#pickup-payment");
-  const onsite = $("#onsite-payment");
-  const transfer = $("#transfer-ready");
-  const link = $("#send-whatsapp");
-  const isPickup = state.mode === "Recoger";
+// Enlace oficial pendiente de ser proporcionado por el negocio.
+const MERCADO_PAGO_LINK = "";
+const allowedPaymentMethods = () => isDelivery ? ["cash", "transfer"] : ["cash", "card-local", "card-online", "transfer"];
+const selectedPaymentMethod = () => allowedPaymentMethods().includes(state.paymentMethod) ? state.paymentMethod : "cash";
+const paymentLabel = () => ({
+  cash: isDelivery ? "Efectivo al repartidor" : "Efectivo en local",
+  "card-local": "Tarjeta en local",
+  "card-online": "Tarjeta en línea · Mercado Pago (pendiente de verificación por Karlitos)",
+  transfer: "Transferencia (pendiente de verificación por Karlitos)",
+})[selectedPaymentMethod()];
 
-  pickup.hidden = !isPickup;
-  onsite.hidden = isPickup;
-  transfer.checked = Boolean(state.transferReady);
-  link.classList.toggle("is-disabled", isPickup && !state.transferReady);
-  link.setAttribute("aria-disabled", String(isPickup && !state.transferReady));
+const renderPaymentRules = () => {
+  const method = selectedPaymentMethod();
+  $("#transfer-payment").hidden = method !== "transfer";
+  $("#payment-description").textContent = ({
+    cash: isDelivery ? "Paga en efectivo al repartidor cuando recibas tu pedido." : "Paga en efectivo en Karlitos al recoger o consumir tu pedido.",
+    "card-local": "Paga con tarjeta en la terminal de Karlitos.",
+    "card-online": "Paga en línea con Mercado Pago y envía tu pedido por WhatsApp.",
+    transfer: "Consulta los datos de transferencia y comparte el comprobante por WhatsApp.",
+  })[method];
+  if (isDelivery) return;
+  $("#online-payment").hidden = method !== "card-online";
+  const paymentLink = $("#mercado-pago-link");
+  paymentLink.hidden = !MERCADO_PAGO_LINK;
+  if (MERCADO_PAGO_LINK) {
+    paymentLink.href = MERCADO_PAGO_LINK;
+    $("#online-payment-status").textContent = `Total del pedido: ${formatMoney(cartTotal())}. Verifica el importe y el negocio en Mercado Pago antes de pagar. Después envía tu pedido por WhatsApp.`;
+  }
+  const link = $("#send-whatsapp");
+  link.classList.remove("is-disabled");
+  link.setAttribute("aria-disabled", "false");
 };
 
 const buildWhatsAppMessage = () => {
@@ -371,11 +388,7 @@ const buildWhatsAppMessage = () => {
   });
 
   lines.push(`Modalidad: ${state.mode}`);
-  if (state.mode === "Recoger") {
-    lines.push("Pago indicado por cliente: Transferencia pendiente de verificación por Karlitos");
-  } else {
-    lines.push(`Pago indicado por cliente: ${state.onsitePayment}`);
-  }
+  lines.push(`Pago indicado por cliente: ${paymentLabel()}`);
   lines.push(`Total estimado: ${formatMoney(cartTotal())}`);
   return lines.join("\n");
 };
@@ -712,22 +725,51 @@ const bonelessLineFromForm = () => {
 const restoreSavedState = (saved) => {
   state.cart = Array.isArray(saved.cart) ? saved.cart : [];
   limitBurgerExtras();
-  state.mode = saved.mode || "Recoger";
+  state.mode = saved.mode === "Estoy en Karlitos" ? "Pagar en Karlitos" : saved.mode || "Recoger";
   state.customerName = saved.customerName || "";
   state.source = state.source || saved.source || "";
   state.skippedUpsell = Boolean(saved.skippedUpsell);
   state.view = "menu";
-  state.transferReady = Boolean(saved.transferReady);
-  state.onsitePayment = saved.onsitePayment || "Caja";
+  state.paymentMethod = saved.paymentMethod || (saved.onsitePayment === "Transferencia" || saved.transferReady ? "transfer" : "cash");
+  state.paymentMethod = selectedPaymentMethod();
   $("#customer-name").value = state.customerName;
   const modeInput = $(`input[name="order-mode"][value="${CSS.escape(state.mode)}"]`);
   if (modeInput) modeInput.checked = true;
-  const onsitePayment = $(`input[name="onsite-payment"][value="${CSS.escape(state.onsitePayment)}"]`);
-  if (onsitePayment) onsitePayment.checked = true;
+  const paymentInput = $(`input[name="payment-method"][value="${state.paymentMethod}"]`);
+  if (paymentInput) paymentInput.checked = true;
   render();
 };
 
+const DELIVERY_CART_KEY = "karlitos_delivery_cart_v1";
+const handoffToDelivery = (event) => {
+  try {
+    sessionStorage.setItem(DELIVERY_CART_KEY, JSON.stringify({ cart: state.cart, createdAt: Date.now() }));
+  } catch {
+    event.preventDefault();
+    $("#delivery-handoff-note").textContent = "No pudimos conservar el pedido. Puedes abrir Servicio a domicilio desde el inicio y seleccionar tus productos allí.";
+  }
+};
+
+const restoreDeliveryCart = () => {
+  if (!isDelivery) return;
+  try {
+    const raw = sessionStorage.getItem(DELIVERY_CART_KEY);
+    sessionStorage.removeItem(DELIVERY_CART_KEY);
+    if (new URLSearchParams(window.location.search).get("from") !== "checkout" || !raw) return;
+    const saved = JSON.parse(raw);
+    const age = Date.now() - saved.createdAt;
+    if (!Number.isFinite(age) || age < 0 || age > 15 * 60 * 1000 || !Array.isArray(saved.cart)) return;
+    state.cart = saved.cart.filter(line => findProduct(line.productId)
+      && Number.isInteger(line.quantity) && line.quantity > 0
+      && Number.isFinite(line.unitPrice) && line.unitPrice >= 0
+      && typeof line.name === "string" && Array.isArray(line.customizations)
+      && line.customizations.every(value => typeof value === "string"));
+    limitBurgerExtras();
+  } catch { /* An unavailable or invalid handoff leaves the normal delivery flow usable. */ }
+};
+
 const initEvents = () => {
+  if (!isDelivery) $("#checkout-delivery")?.addEventListener("click", handoffToDelivery);
   $("#menu-root").addEventListener("click", (event) => {
     const row = event.target.closest("[data-product-id]");
     if (!row) return;
@@ -976,26 +1018,18 @@ const initEvents = () => {
   $$('input[name="order-mode"]').forEach((input) => {
     input.addEventListener("change", () => {
       state.mode = $('input[name="order-mode"]:checked')?.value || "Recoger";
-      if (state.mode !== "Recoger") {
-        state.transferReady = false;
-      }
       saveState();
       renderPaymentRules();
       updateWhatsapp();
     });
   });
 
-  $("#transfer-ready").addEventListener("change", (event) => {
-    state.transferReady = event.target.checked;
-    saveState();
-    renderPaymentRules();
-    updateWhatsapp();
-  });
-
-  $$('input[name="onsite-payment"]').forEach((input) => {
+  $$('input[name="payment-method"]').forEach((input) => {
     input.addEventListener("change", () => {
-      state.onsitePayment = $('input[name="onsite-payment"]:checked')?.value || "Caja";
+      state.paymentMethod = input.value;
+      state.paymentMethod = selectedPaymentMethod();
       saveState();
+      renderPaymentRules();
       updateWhatsapp();
     });
   });
@@ -1015,11 +1049,6 @@ const initEvents = () => {
 
   $("#send-whatsapp").addEventListener("click", (event) => {
     if (isDelivery) return;
-    if (state.mode === "Recoger" && !state.transferReady) {
-      event.preventDefault();
-      $("#pickup-payment").scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
     saveState();
   });
 
@@ -1029,12 +1058,10 @@ const initEvents = () => {
     state.mode = isDelivery ? "Domicilio" : "Recoger";
     state.skippedUpsell = false;
     state.view = "menu";
-    state.transferReady = false;
-    state.onsitePayment = "Caja";
+    state.paymentMethod = "cash";
     $("#customer-name").value = "";
-    $('input[name="order-mode"][value="Recoger"]').checked = true;
-    $('input[name="onsite-payment"][value="Caja"]').checked = true;
-    $("#transfer-ready").checked = false;
+    if (!isDelivery) $('input[name="order-mode"][value="Recoger"]').checked = true;
+    $('input[name="payment-method"][value="cash"]').checked = true;
     $("#resume-panel").hidden = true;
     if (!isDelivery) localStorage.removeItem(STORAGE_KEY);
     if (isDelivery) {
@@ -1091,6 +1118,7 @@ const initCategoryTracking = () => {
 // Delivery shares the existing catalog and cart; personal data never enters storage.
 const deliveryValue = (id) => document.getElementById(id).value.trim();
 const renderDelivery = () => {
+  renderPaymentRules();
   const subtotal = cartTotal();
   const coverage = deliveryValue("delivery-coverage");
   const zone = DELIVERY_ZONES[DELIVERY_COLONIES[coverage]];
@@ -1134,6 +1162,7 @@ const buildDeliveryMessage = () => {
   lines.push("", `Subtotal de productos: ${formatMoney(cartTotal())}`,
     zone ? `Envío: ${formatMoney(zone.fee)}` : "Envío: por confirmar",
     zone ? `Total: ${formatMoney(cartTotal() + zone.fee)}` : "Total: pendiente");
+  lines.push(`Pago indicado por cliente: ${paymentLabel()}`);
   lines.push("Pedido y entrega pendientes de confirmación por Karlitos.");
   return lines.join("\n");
 };
@@ -1160,6 +1189,7 @@ const clearDeliveryLocation = () => {
 
 const initDelivery = () => {
   if (!isDelivery) return;
+  renderPaymentRules();
   $("#delivery-coverage").addEventListener("change", renderDelivery);
   $("#consult-coverage").addEventListener("click", () => {
     state.view = "checkout";
@@ -1206,6 +1236,7 @@ const initDelivery = () => {
   $("#delivery-form").addEventListener("input", (event) => event.target.setCustomValidity?.(""));
 };
 
+restoreDeliveryCart();
 renderMenu();
 initEvents();
 initDelivery();

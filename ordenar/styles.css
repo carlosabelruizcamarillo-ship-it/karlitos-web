@@ -1559,12 +1559,16 @@ body:has(#resume-clear:not([hidden])) {
   scroll-margin-top: calc(var(--order-header-height) + 100px);
 }
 .order-guide {
+  position: relative;
+  z-index: 1;
   padding: 10px 12px;
   text-align: center;
-  background: linear-gradient(180deg, #30200f, #171008);
+  background: #171008;
+  color: var(--text);
   border-block: 1px solid rgba(255, 179, 65, 0.65);
 }
 .order-guide summary {
+  color: var(--text);
   align-items: center;
   gap: 6px;
   min-height: 44px;
@@ -1573,12 +1577,12 @@ body:has(#resume-clear:not([hidden])) {
   display: inline-block;
   padding: 5px 14px;
   border-radius: 999px;
-  background: var(--gold);
-  color: var(--ink);
+  background: #ffce32;
+  color: #211509;
   font-size: 16px;
 }
 .order-guide summary:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid #ffce32;
   outline-offset: 4px;
 }
 .order-guide span {
@@ -1586,6 +1590,7 @@ body:has(#resume-clear:not([hidden])) {
   line-height: 1.35;
 }
 .order-guide ol {
+  color: var(--text);
   width: fit-content;
   max-width: 100%;
   margin: 10px auto 0;
@@ -1758,3 +1763,10 @@ body[data-delivery] #delivery-progress { min-height: 4.5em; line-height: 1.5; ma
 body[data-delivery] #delivery-progress[hidden] { display: block !important; visibility: hidden; }
 
 html:has(body[data-delivery]) { scroll-behavior: auto; }
+
+/* Los nombres completos deben caber también en pantallas pequeñas. */
+@media (max-width: 400px) {
+  .category-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+#payment-rules [hidden] { display: none !important; }
