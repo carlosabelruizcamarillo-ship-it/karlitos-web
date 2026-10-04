@@ -1770,3 +1770,13 @@ html:has(body[data-delivery]) { scroll-behavior: auto; }
 }
 
 #payment-rules [hidden] { display: none !important; }
+
+/* Contener opciones y textos de pago en pantallas estrechas. */
+#payment-rules, #payment-rules .mode-field, #payment-rules .payment-box { min-width: 0; max-width: 100%; }
+#payment-rules .mode-field { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#payment-rules label { min-width: 0; overflow-wrap: anywhere; }
+#payment-rules input { flex-shrink: 0; }
+#payment-rules p, #payment-rules a { overflow-wrap: anywhere; }
+@media (max-width: 400px) {
+  #payment-rules .mode-field { grid-template-columns: minmax(0, 1fr); }
+}
