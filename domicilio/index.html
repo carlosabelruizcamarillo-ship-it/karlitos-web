@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex, follow" />
   <link rel="canonical" href="https://karlitoshotdogs.com/domicilio/" />
   <meta name="theme-color" content="#b70610" />
-  <link rel="stylesheet" href="../ordenar/styles.css?v=pagos-opciones-20261003-v2" />
+  <link rel="stylesheet" href="../ordenar/styles.css?v=transferencia-20261004" />
 </head>
 <body data-delivery="true">
   <img class="mascot-watermark" src="../ordenar/assets/mascota-karlitos.png" alt="" aria-hidden="true" />
@@ -112,8 +112,14 @@
         <p id="payment-description"></p>
         <div id="transfer-payment" class="payment-box" hidden>
           <strong>Pago por transferencia</strong>
-          <p>Solicita los datos actualizados de Karlitos y envía tu comprobante por WhatsApp. El pago queda pendiente hasta que Karlitos confirme que lo recibió.</p>
-          <a class="secondary-button" href="https://wa.me/526242112620?text=Hola%2C%20quiero%20pagar%20por%20transferencia.%20%C2%BFMe%20comparten%20banco%2C%20titular%20y%20CLABE%20actualizados%3F" target="_blank" rel="noopener noreferrer">Solicitar datos de transferencia</a>
+          <dl class="transfer-details">
+            <div><dt>Institución</dt><dd>Mercado Pago W</dd></div>
+            <div><dt>Beneficiario</dt><dd>Carlos Abel Ruiz Camarillo</dd></div>
+            <div><dt>CLABE</dt><dd id="transfer-clabe">722969040829353838</dd></div>
+          </dl>
+          <button id="copy-clabe" class="secondary-button" type="button">Copiar CLABE</button>
+          <p id="copy-clabe-status" role="status" aria-live="polite"></p>
+          <p>Comprueba los datos antes de transferir y envía tu comprobante por WhatsApp junto con el pedido. Karlitos confirmará la recepción del pago.</p>
         </div>
       </section>
 
@@ -299,6 +305,6 @@
     </form>
   </div>
 
-  <script src="../ordenar/app.js?v=modalidad-mercadopago-20261004"></script>
+  <script src="../ordenar/app.js?v=transferencia-20261004"></script>
 </body>
 </html>

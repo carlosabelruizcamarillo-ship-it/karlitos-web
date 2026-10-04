@@ -768,7 +768,19 @@ const restoreDeliveryCart = () => {
   } catch { /* An unavailable or invalid handoff leaves the normal delivery flow usable. */ }
 };
 
+const copyTransferClabe = async () => {
+  const status = $("#copy-clabe-status");
+  const clabe = $("#transfer-clabe").textContent.trim();
+  try {
+    await navigator.clipboard.writeText(clabe);
+    status.textContent = "CLABE copiada.";
+  } catch {
+    status.textContent = "No se pudo copiar. Selecciona y copia la CLABE que aparece arriba.";
+  }
+};
+
 const initEvents = () => {
+  $("#copy-clabe").addEventListener("click", copyTransferClabe);
   if (!isDelivery) $("#checkout-delivery")?.addEventListener("click", handoffToDelivery);
   $("#menu-root").addEventListener("click", (event) => {
     const row = event.target.closest("[data-product-id]");

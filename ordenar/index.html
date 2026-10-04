@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex, follow" />
   <link rel="canonical" href="https://karlitoshotdogs.com/ordenar/" />
   <meta name="theme-color" content="#b70610" />
-  <link rel="stylesheet" href="./styles.css?v=pagos-opciones-20261003-v2" />
+  <link rel="stylesheet" href="./styles.css?v=transferencia-20261004" />
 </head>
 <body>
   <img class="mascot-watermark" src="./assets/mascota-karlitos.png" alt="" aria-hidden="true" />
@@ -109,8 +109,14 @@
         <p id="payment-description"></p>
         <div id="transfer-payment" class="payment-box" hidden>
           <strong>Pago por transferencia</strong>
-          <p>Solicita los datos actualizados de Karlitos y envía tu comprobante por WhatsApp. El pago queda pendiente hasta que Karlitos confirme que lo recibió.</p>
-          <a class="secondary-button" href="https://wa.me/526242112620?text=Hola%2C%20quiero%20pagar%20por%20transferencia.%20%C2%BFMe%20comparten%20banco%2C%20titular%20y%20CLABE%20actualizados%3F" target="_blank" rel="noopener noreferrer">Solicitar datos de transferencia</a>
+          <dl class="transfer-details">
+            <div><dt>Institución</dt><dd>Mercado Pago W</dd></div>
+            <div><dt>Beneficiario</dt><dd>Carlos Abel Ruiz Camarillo</dd></div>
+            <div><dt>CLABE</dt><dd id="transfer-clabe">722969040829353838</dd></div>
+          </dl>
+          <button id="copy-clabe" class="secondary-button" type="button">Copiar CLABE</button>
+          <p id="copy-clabe-status" role="status" aria-live="polite"></p>
+          <p>Comprueba los datos antes de transferir y envía tu comprobante por WhatsApp junto con el pedido. Karlitos confirmará la recepción del pago.</p>
         </div>
         <div id="online-payment" class="payment-box" hidden>
           <strong>Tarjeta en línea con Mercado Pago</strong>
@@ -292,6 +298,6 @@
   <a class="location-fab" href="https://www.google.com/maps/search/?api=1&query=Karlitos+Hotdogs%2C+Avenida+Laurel+entre+Cascalozuchil%2C+23436+San+Jos%C3%A9+del+Cabo%2C+B.C.S." target="_blank" rel="noopener noreferrer" aria-label="Cómo llegar a Karlitos Hot Dogs" title="Cómo llegar a Karlitos">
     <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
   </a>
-  <script src="./app.js?v=modalidad-mercadopago-20261004"></script>
+  <script src="./app.js?v=transferencia-20261004"></script>
 </body>
 </html>

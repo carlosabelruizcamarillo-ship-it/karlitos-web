@@ -1780,3 +1780,11 @@ html:has(body[data-delivery]) { scroll-behavior: auto; }
 @media (max-width: 400px) {
   #payment-rules .mode-field { grid-template-columns: minmax(0, 1fr); }
 }
+
+.transfer-details { display: grid; gap: 12px; margin: 16px 0; }
+.transfer-details div, .transfer-details dd { min-width: 0; }
+.transfer-details dt { color: var(--gold); font-size: 13px; font-weight: 800; }
+.transfer-details dd { margin: 4px 0 0; overflow-wrap: anywhere; }
+#transfer-clabe { font-family: monospace; font-size: 17px; user-select: text; }
+#copy-clabe { width: 100%; }
+#copy-clabe-status:empty { display: none; }
