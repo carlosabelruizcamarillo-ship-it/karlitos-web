@@ -334,8 +334,8 @@ const renderCartBar = () => {
   summary.textContent = `${count} ${count === 1 ? "producto" : "productos"} · ${formatMoney(cartTotal())}`;
 };
 
-// Enlace oficial pendiente de ser proporcionado por el negocio.
-const MERCADO_PAGO_LINK = "";
+// Enlace sin monto definido proporcionado por el usuario; Karlitos verifica el pago.
+const MERCADO_PAGO_LINK = "https://link.mercadopago.com.mx/krlitoshotdogs";
 const allowedPaymentMethods = () => isDelivery ? ["cash", "transfer"] : ["cash", "card-local", "card-online", "transfer"];
 const selectedPaymentMethod = () => allowedPaymentMethods().includes(state.paymentMethod) ? state.paymentMethod : "cash";
 const paymentLabel = () => ({
@@ -360,7 +360,7 @@ const renderPaymentRules = () => {
   paymentLink.hidden = !MERCADO_PAGO_LINK;
   if (MERCADO_PAGO_LINK) {
     paymentLink.href = MERCADO_PAGO_LINK;
-    $("#online-payment-status").textContent = `Total del pedido: ${formatMoney(cartTotal())}. Verifica el importe y el negocio en Mercado Pago antes de pagar. Después envía tu pedido por WhatsApp.`;
+    $("#online-payment-status").textContent = `Total del pedido: ${formatMoney(cartTotal())}. Escribe ese importe en Mercado Pago y comprueba que aparezca “Karlitos hotdogs”. Después vuelve aquí, envía tu pedido por WhatsApp y adjunta tu comprobante.`;
   }
   const link = $("#send-whatsapp");
   link.classList.remove("is-disabled");
@@ -725,7 +725,7 @@ const bonelessLineFromForm = () => {
 const restoreSavedState = (saved) => {
   state.cart = Array.isArray(saved.cart) ? saved.cart : [];
   limitBurgerExtras();
-  state.mode = saved.mode === "Estoy en Karlitos" ? "Pagar en Karlitos" : saved.mode || "Recoger";
+  state.mode = ["Estoy en Karlitos", "Pagar en Karlitos"].includes(saved.mode) ? "Comer en Karlitos" : saved.mode || "Recoger";
   state.customerName = saved.customerName || "";
   state.source = state.source || saved.source || "";
   state.skippedUpsell = Boolean(saved.skippedUpsell);
