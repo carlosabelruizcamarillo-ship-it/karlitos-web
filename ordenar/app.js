@@ -7,20 +7,76 @@ const DELIVERY_ZONES = {
   zone1_75: { minimum: 100, fee: 75 },
   zone1_85: { minimum: 100, fee: 85 },
   zone2: { minimum: 300, fee: 100 },
+  zone2_120: { minimum: 300, fee: 120 },
+  pending75: { minimum: null, fee: 75 },
+  pending85: { minimum: null, fee: 85 },
+  pending95: { minimum: null, fee: 95 },
+  pending100: { minimum: null, fee: 100 },
+  pending110: { minimum: null, fee: 110 },
+  pending120: { minimum: null, fee: 120 },
+  pending130: { minimum: null, fee: 130 },
+  pending135: { minimum: null, fee: 135 },
+  pending140: { minimum: null, fee: 140 },
+  pending145: { minimum: null, fee: 145 },
+  pending150: { minimum: null, fee: 150 },
+  pending155: { minimum: null, fee: 155 },
+  pending160: { minimum: null, fee: 160 },
+  pending170: { minimum: null, fee: 170 },
 };
-// Tarifas del 2026-10-20; Santa Rosa retirada de cobertura por orden del propietario.
-// Coincidencia exacta: no extender cobertura a etapas, ampliaciones u otros nombres.
+// Tabulador completo autorizado el 2026-10-20. null significa mínimo por confirmar.
+// Los mínimos históricos se conservan; las variantes se resuelven por nombre completo.
 const DELIVERY_COLONIES = {
-  "Santa Anita": "zone1_85",
-  "Las Veredas": "zone1",
-  "Viva Veredas": "zone1",
+  "Veredas": "zone1",
   "Buenos Aires": "zone1",
-  "San Bernabé": "zone1_65",
-  "San José Viejo": "zone1_75",
-  "Costa Dorada": "zone1_65",
-  "Villa Bonita": "zone1_60",
   "San Carlos": "zone1_55",
+  "Villa Bonita": "zone1_60",
+  "San Bernabé": "zone1_65",
+  "Costa Dorada": "zone1_65",
+  "Santa Catarina": "pending75",
+  "San José Viejo": "zone1_75",
+  "La Ballena": "pending85",
+  "Santa Anita": "zone1_85",
+  "La Ballena — segunda etapa": "pending95",
+  "Puerto Nuevo": "pending95",
+  "Monte Bello": "pending100",
   "Zacatal": "zone2",
+  "Ampliación de Zacatal": "pending100",
+  "INVI": "pending100",
+  "Meza": "pending110",
+  "Vista Hermosa": "pending120",
+  "Santa Rosa": "zone2_120",
+  "Ampliación de Santa Rosa": "pending130",
+  "Vado de Santa Rosa": "pending130",
+  "Villas de Cortez": "pending135",
+  "Guaymitas": "pending140",
+  "Desarrollo San Jorge": "pending140",
+  "Monte Real — primer OXXO": "pending145",
+  "Monte Real — segundo OXXO": "pending150",
+  "Colinas": "pending150",
+  "Chamizal": "pending150",
+  "Monte Real — tercer OXXO": "pending155",
+  "Colinas Plus": "pending155",
+  "Centro": "pending160",
+  "Magisterial": "pending170",
+  "Viva Veredas": "zone1",
+};
+const DELIVERY_ALIASES = { "Las Veredas": "Veredas" };
+const deliveryNameKey = (value) => typeof value === "string"
+  ? value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase().replace(/\s+/g, " ") : "";
+const resolveDeliveryColony = (coverage) => {
+  const key = deliveryNameKey(coverage);
+  const colony = Object.keys(DELIVERY_COLONIES).find(name => deliveryNameKey(name) === key);
+  const alias = Object.keys(DELIVERY_ALIASES).find(name => deliveryNameKey(name) === key);
+  return colony || (alias ? DELIVERY_ALIASES[alias] : null);
+};
+const deliveryDetails = (subtotal, coverage) => {
+  const colony = resolveDeliveryColony(coverage);
+  const zone = colony ? DELIVERY_ZONES[DELIVERY_COLONIES[colony]] : undefined;
+  const minimumPending = Boolean(zone && zone.minimum === null);
+  const selected = Boolean(zone) || coverage === "unsure";
+  const shortage = zone && !minimumPending ? Math.max(0, zone.minimum - subtotal) : 0;
+  return { zone, coverage: colony || "", minimumPending, selected, shortage, subtotal, fee: zone ? zone.fee : null,
+    total: zone ? subtotal + zone.fee : null, canContinue: selected && shortage === 0 };
 };
 let deliveryLocation = "";
 let locationRequest = 0;
@@ -1151,33 +1207,32 @@ const renderDelivery = () => {
   renderPaymentRules();
   const subtotal = cartTotal();
   const coverage = deliveryValue("delivery-coverage");
-  const zone = DELIVERY_ZONES[DELIVERY_COLONIES[coverage]];
-  const selected = Boolean(zone) || coverage === "unsure";
-  const shortage = zone ? Math.max(0, zone.minimum - subtotal) : 0;
-  const minimumMessage = shortage ? `Agrega ${formatMoney(shortage)} más para solicitar servicio a domicilio en tu colonia.` : "";
+  const { zone, minimumPending, selected, shortage, total, canContinue } = deliveryDetails(subtotal, coverage);
+  const minimumMessage = minimumPending ? "Mínimo de compra por confirmar con Karlitos. Puedes preparar tu solicitud."
+    : shortage ? `Agrega ${formatMoney(shortage)} más para solicitar servicio a domicilio en tu colonia.` : "";
   $("#consult-coverage").hidden = coverage !== "unsure";
   $("#menu-root").hidden = !selected;
   $(".category-nav").hidden = !selected;
   $("#delivery-subtotal").textContent = formatMoney(subtotal);
   $("#delivery-fee-label").textContent = "Envío";
   $("#delivery-fee").textContent = zone ? formatMoney(zone.fee) : "Envío por confirmar";
-  $("#checkout-total").textContent = zone ? formatMoney(subtotal + zone.fee) : "Total pendiente";
+  $("#checkout-total").textContent = zone ? formatMoney(total) : "Total pendiente";
   $("#coverage-note").textContent = zone
-    ? `Mínimo ${formatMoney(zone.minimum)} · Envío ${formatMoney(zone.fee)}`
+    ? `${minimumPending ? "Mínimo de compra por confirmar" : `Mínimo ${formatMoney(zone.minimum)}`} · Envío ${formatMoney(zone.fee)}`
     : coverage === "unsure" ? "Envío por confirmar · Total pendiente. Consulta cobertura por WhatsApp." : "";
   $("#delivery-minimum").textContent = minimumMessage;
   $("#delivery-order-guide").hidden = !selected;
   $("#delivery-progress").textContent = subtotal > 0 ? minimumMessage : "";
   $("#delivery-progress").hidden = subtotal === 0 || !minimumMessage;
-  $("#send-whatsapp").disabled = !selected || shortage > 0;
-  $("#continue-order").disabled = !selected || shortage > 0;
+  $("#send-whatsapp").disabled = !canContinue;
+  $("#continue-order").disabled = !canContinue;
   $("#checkout").hidden = !selected || state.view !== "checkout";
 };
 
 const buildDeliveryMessage = () => {
-  const zone = DELIVERY_ZONES[DELIVERY_COLONIES[deliveryValue("delivery-coverage")]];
+  const { zone, coverage, minimumPending, total } = deliveryDetails(cartTotal(), deliveryValue("delivery-coverage"));
   const lines = ["Nueva solicitud de pedido a domicilio", "",
-    `Colonia: ${zone ? deliveryValue("delivery-coverage") : "cobertura por confirmar"}`,
+    `Colonia: ${zone ? coverage : "cobertura por confirmar"}`,
     `Nombre: ${deliveryValue("customer-name")}`,
     `Teléfono: ${deliveryValue("delivery-phone")}`];
   if (deliveryValue("delivery-address")) lines.push(`Dirección: ${deliveryValue("delivery-address")}`);
@@ -1191,8 +1246,9 @@ const buildDeliveryMessage = () => {
   });
   lines.push("", `Subtotal de productos: ${formatMoney(cartTotal())}`,
     zone ? `Envío: ${formatMoney(zone.fee)}` : "Envío: por confirmar",
-    zone ? `Total: ${formatMoney(cartTotal() + zone.fee)}` : "Total: pendiente");
+    zone ? `Total: ${formatMoney(total)}` : "Total: pendiente");
   lines.push(`Pago indicado por cliente: ${paymentLabel()}`);
+  if (minimumPending) lines.push("Mínimo de compra por confirmar con Karlitos.");
   lines.push("Pedido y entrega pendientes de confirmación por Karlitos.");
   return lines.join("\n");
 };
