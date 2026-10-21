@@ -1,9 +1,29 @@
 const isDelivery = document.body.dataset.delivery === "true";
 const DELIVERY_ZONES = {
   zone1: { minimum: 100, fee: 50 },
+  zone1_55: { minimum: 100, fee: 55 },
+  zone1_60: { minimum: 100, fee: 60 },
+  zone1_65: { minimum: 100, fee: 65 },
+  zone1_75: { minimum: 100, fee: 75 },
+  zone1_85: { minimum: 100, fee: 85 },
   zone2: { minimum: 300, fee: 100 },
+  zone2_120: { minimum: 300, fee: 120 },
 };
-const DELIVERY_COLONIES = {"Santa Anita": "zone1", "Las Veredas": "zone1", "Viva Veredas": "zone1", "Buenos Aires": "zone1", "San Bernabé": "zone1", "San José Viejo": "zone1", "Costa Dorada": "zone1", "Villa Bonita": "zone1", "San Carlos": "zone1", "Zacatal": "zone2", "Santa Rosa": "zone2"};
+// Envíos actualizados el 2026-10-20; mínimos y colonias habilitadas conservados.
+// Coincidencia exacta: no extender cobertura a etapas, ampliaciones u otros nombres.
+const DELIVERY_COLONIES = {
+  "Santa Anita": "zone1_85",
+  "Las Veredas": "zone1",
+  "Viva Veredas": "zone1",
+  "Buenos Aires": "zone1",
+  "San Bernabé": "zone1_65",
+  "San José Viejo": "zone1_75",
+  "Costa Dorada": "zone1_65",
+  "Villa Bonita": "zone1_60",
+  "San Carlos": "zone1_55",
+  "Zacatal": "zone2",
+  "Santa Rosa": "zone2_120",
+};
 let deliveryLocation = "";
 let locationRequest = 0;
 const WHATSAPP_NUMBER = "526242112620";
