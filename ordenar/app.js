@@ -7,9 +7,8 @@ const DELIVERY_ZONES = {
   zone1_75: { minimum: 100, fee: 75 },
   zone1_85: { minimum: 100, fee: 85 },
   zone2: { minimum: 300, fee: 100 },
-  zone2_120: { minimum: 300, fee: 120 },
 };
-// Envíos actualizados el 2026-10-20; mínimos y colonias habilitadas conservados.
+// Tarifas del 2026-10-20; Santa Rosa retirada de cobertura por orden del propietario.
 // Coincidencia exacta: no extender cobertura a etapas, ampliaciones u otros nombres.
 const DELIVERY_COLONIES = {
   "Santa Anita": "zone1_85",
@@ -22,7 +21,6 @@ const DELIVERY_COLONIES = {
   "Villa Bonita": "zone1_60",
   "San Carlos": "zone1_55",
   "Zacatal": "zone2",
-  "Santa Rosa": "zone2_120",
 };
 let deliveryLocation = "";
 let locationRequest = 0;
